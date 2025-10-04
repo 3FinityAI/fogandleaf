@@ -1,3 +1,6 @@
+Sure! Here's the complete `.md` file content in a single copyable block:
+
+````markdown
 # 🍃 Fog & Leaf - Premium Tea E-commerce Platform
 
 A premium tea e-commerce platform with a modern customer website, admin dashboard, and robust backend API.
@@ -83,6 +86,7 @@ A premium tea e-commerce platform with a modern customer website, admin dashboar
 git clone https://github.com/surajc-15/ecommereProject.git
 cd fog-and-leafV1
 ```
+````
 
 ### 2. Backend Setup (`Fogbackend`)
 
@@ -128,7 +132,7 @@ FACEBOOK_APP_SECRET=your_facebook_app_secret
 
 ```bash
 npm run db:create   # Creates all tables (drops if exists)
-npm run db:seed      # Inserts product data
+npm run db:seed     # Inserts product data
 ```
 
 **Start backend server:**
@@ -146,7 +150,6 @@ API available at: `http://localhost:5000`
 ```bash
 cd ../fog-and-leaf
 npm install
-echo "VITE_API_URL=http://localhost:5000" > .env
 npm run dev
 ```
 
@@ -159,11 +162,10 @@ Frontend available at: `http://localhost:5173`
 ```bash
 cd ../fog-and-leaf-admin
 npm install
-echo "VITE_API_URL=http://localhost:5000" > .env
 npm run dev
 ```
 
-Admin dashboard available at: `http://localhost:5174`
+Admin dashboard available at: `http://localhost:3002`
 
 ---
 
@@ -212,8 +214,12 @@ fog-and-leafV1/
 | Issue                          | Solution                                                                                                                    |              |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | **Database connection fails**  | Ensure PostgreSQL is running. Verify credentials in `.env`. Make sure database exists.                                      |              |
-| **Port conflicts**             | Change `PORT` in `.env`. On Windows, end processes via Task Manager. On Mac/Linux: `lsof -ti:5000                           | xargs kill`. |
+| **Port conflicts**             | Change `PORT` in `.env`. On Windows, end processes via Task Manager. On Mac/Linux: `lsof -ti:<port>                         | xargs kill`. |
 | **Module import errors**       | Run `npm install`. Delete `node_modules` & `package-lock.json`, then reinstall. Clear npm cache: `npm cache clean --force`. |              |
 | **CORS errors**                | Verify backend is running on the correct port. Check frontend `.env` URL. Ensure CORS is enabled in backend.                |              |
 | **Database permission errors** | Ensure PostgreSQL user has `CREATEDB` permission: `ALTER USER postgres CREATEDB;`.                                          |              |
 | **PostgreSQL service issues**  | Make sure PostgreSQL service is running. Restart if necessary.                                                              |              |
+
+```
+
+```
