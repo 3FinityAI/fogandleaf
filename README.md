@@ -1,6 +1,3 @@
-Sure! Here's the complete `.md` file content in a single copyable block:
-
-````markdown
 # 🍃 Fog & Leaf - Premium Tea E-commerce Platform
 
 A premium tea e-commerce platform with a modern customer website, admin dashboard, and robust backend API.
@@ -9,12 +6,12 @@ A premium tea e-commerce platform with a modern customer website, admin dashboar
 
 ## 📋 Table of Contents
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
-- [Project Structure](#project-structure)
-- [Troubleshooting](#troubleshooting)
+- [✨ Features](#-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [📋 Prerequisites](#-prerequisites)
+- [🚀 Installation & Setup](#-installation--setup)
+- [📁 Project Structure](#-project-structure)
+- [🐛 Troubleshooting](#-troubleshooting)
 
 ---
 
@@ -53,11 +50,11 @@ A premium tea e-commerce platform with a modern customer website, admin dashboar
 ### Frontend
 
 - **React 19**
-- **Vite** (build tool)
+- **Vite**
 - **Tailwind CSS**
 - **React Router DOM**
-- **Axios** (HTTP client)
-- **Lucide React** (icons)
+- **Axios**
+- **Lucide React**
 
 ### Backend
 
@@ -86,7 +83,6 @@ A premium tea e-commerce platform with a modern customer website, admin dashboar
 git clone https://github.com/surajc-15/ecommereProject.git
 cd fog-and-leafV1
 ```
-````
 
 ### 2. Backend Setup (`Fogbackend`)
 
@@ -96,7 +92,7 @@ npm install
 cp .env.example .env
 ```
 
-**Configure `.env`:**
+### Configure `.env`
 
 ```
 # Database
@@ -128,14 +124,14 @@ FACEBOOK_APP_ID=your_facebook_app_id
 FACEBOOK_APP_SECRET=your_facebook_app_secret
 ```
 
-**Create tables & seed products:**
+### Create tables & seed products
 
 ```bash
 npm run db:create   # Creates all tables (drops if exists)
 npm run db:seed     # Inserts product data
 ```
 
-**Start backend server:**
+### Start Backend Server
 
 ```bash
 npm run dev
@@ -211,15 +207,11 @@ fog-and-leafV1/
 
 ## 🐛 Troubleshooting
 
-| Issue                          | Solution                                                                                                                    |              |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| **Database connection fails**  | Ensure PostgreSQL is running. Verify credentials in `.env`. Make sure database exists.                                      |              |
-| **Port conflicts**             | Change `PORT` in `.env`. On Windows, end processes via Task Manager. On Mac/Linux: `lsof -ti:<port>                         | xargs kill`. |
-| **Module import errors**       | Run `npm install`. Delete `node_modules` & `package-lock.json`, then reinstall. Clear npm cache: `npm cache clean --force`. |              |
-| **CORS errors**                | Verify backend is running on the correct port. Check frontend `.env` URL. Ensure CORS is enabled in backend.                |              |
-| **Database permission errors** | Ensure PostgreSQL user has `CREATEDB` permission: `ALTER USER postgres CREATEDB;`.                                          |              |
-| **PostgreSQL service issues**  | Make sure PostgreSQL service is running. Restart if necessary.                                                              |              |
-
-```
-
-```
+| Issue                          | Solution                                                                                                                    |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| **Database connection fails**  | Ensure PostgreSQL is running. Verify credentials in `.env`. Make sure database exists.                                      |
+| **Port conflicts**             | Change `PORT` in `.env`. On Windows, end processes via Task Manager. On Mac/Linux: `lsof -ti:<port> \| xargs kill`.         |
+| **Module import errors**       | Run `npm install`. Delete `node_modules` & `package-lock.json`, then reinstall. Clear npm cache: `npm cache clean --force`. |
+| **CORS errors**                | Verify backend is running on the correct port. Check frontend `.env` URL. Ensure CORS is enabled in backend.                |
+| **Database permission errors** | Ensure PostgreSQL user has `CREATEDB` permission: `ALTER USER postgres CREATEDB;`.                                          |
+| **PostgreSQL service issues**  | Make sure PostgreSQL service is running. Restart if necessary.                                                              |
