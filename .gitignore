@@ -1,0 +1,40 @@
+# Node.js / backend
+Fogbackend/node_modules/
+Fogbackend/dist/
+Fogbackend/build/
+Fogbackend/.env
+Fogbackend/logs/
+*.sqlite
+*.sqlite3
+
+# Frontend / Vite / React
+fog-and-leaf/node_modules/
+fog-and-leaf/dist/
+fog-and-leaf/.env
+fog-and-leaf-admin/node_modules/
+fog-and-leaf-admin/dist/
+fog-and-leaf-admin/.env
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.iml
+*.swp
+
+# Coverage
+coverage/
+*.lcov
+
+# Temporary / cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
