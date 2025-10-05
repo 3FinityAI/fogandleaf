@@ -162,7 +162,7 @@ npm run dev
 ```
 
 Admin dashboard available at: `http://localhost:3002`
-
+Refer the vite config file.
 ---
 
 ## 📁 Project Structure
