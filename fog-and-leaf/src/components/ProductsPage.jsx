@@ -326,10 +326,10 @@ const ProductsPage = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <Card
-                  className={`overflow-hidden hover:shadow-xl transition-all duration-300 group ${
+                  className={`hover:shadow-xl transition-all duration-300 group bg-white rounded-xl border shadow-sm ${
                     viewMode === "list"
-                      ? "flex flex-row max-w-none h-40"
-                      : "flex flex-col max-w-sm mx-auto h-full"
+                      ? "flex flex-row max-w-none h-48 gap-0 py-0"
+                      : "flex flex-col max-w-sm mx-auto h-full gap-0 py-0"
                   } ${
                     product.stockQuantity === 0
                       ? "opacity-60 border-red-200"
@@ -352,9 +352,9 @@ const ProductsPage = () => {
 
                   {/* Product Image */}
                   <div
-                    className={`bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative flex-shrink-0 ${
+                    className={`bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative flex-shrink-0 overflow-hidden ${
                       viewMode === "list"
-                        ? "w-40 h-40"
+                        ? "w-52 h-48"
                         : "w-full h-64 sm:h-56 md:h-48 lg:h-56"
                     }`}
                   >
@@ -451,242 +451,476 @@ const ProductsPage = () => {
                   <CardContent
                     className={`${
                       viewMode === "list"
-                        ? "flex-1 p-4 flex flex-col justify-between"
+                        ? "flex-1 p-4 flex gap-4"
                         : "p-4 sm:p-6 flex flex-col flex-1 justify-between"
                     }`}
                   >
-                    {/* Category and Title Section */}
-                    <div>
-                      <Badge
-                        variant="secondary"
-                        className="mb-2 bg-green-100 text-green-800"
-                      >
-                        {product.category}
-                      </Badge>
-
-                      {/* Title */}
-                      <h3
-                        className={`font-semibold text-gray-900 mb-2 ${
-                          viewMode === "list" ? "text-lg" : "text-xl"
-                        }`}
-                      >
-                        {product.name}
-                      </h3>
-
-                      {/* Origin Info */}
-                      <p className="text-sm text-gray-500 mb-2">
-                        Origin: {product.origin} • {product.weight}
-                      </p>
-
-                      {/* Description */}
-                      <p className="text-gray-600 mb-4 line-clamp-2">
-                        {product.description}
-                      </p>
-
-                      {/* Features */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {product.features &&
-                          product.features
-                            .slice(0, viewMode === "list" ? 2 : 3)
-                            .map((feature, idx) => (
+                    {viewMode === "list" ? (
+                      <>
+                        {/* Left Section - Product Details */}
+                        <div className="flex-1 space-y-1.5">
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-1">
                               <Badge
-                                key={idx}
-                                variant="outline"
-                                className="border-green-200 text-green-800 text-xs"
-                              >
-                                {feature}
-                              </Badge>
-                            ))}
-                      </div>
-
-                      {/* Stock Status Warning */}
-                      {product.stockQuantity === 0 ? (
-                        <div className="mb-3">
-                          <span className="text-red-700 text-sm font-bold bg-red-100 px-3 py-1 rounded-md border border-red-300">
-                            ❌ Out of Stock
-                          </span>
-                        </div>
-                      ) : product.stockQuantity <= 3 ? (
-                        <div className="mb-3">
-                          <span className="text-orange-700 text-sm font-bold bg-orange-100 px-3 py-1 rounded-md border border-orange-300">
-                            ⚠️ Only {product.stockQuantity} left in stock!
-                          </span>
-                        </div>
-                      ) : product.stockQuantity <= 10 ? (
-                        <div className="mb-3">
-                          <span className="text-yellow-700 text-sm font-medium bg-yellow-100 px-3 py-1 rounded-md border border-yellow-300">
-                            🔔 Limited Stock ({product.stockQuantity} available)
-                          </span>
-                        </div>
-                      ) : null}
-                    </div>
-
-                    {/* Price and Actions */}
-                    <div
-                      className={`${
-                        viewMode === "list"
-                          ? "flex items-center justify-between"
-                          : "space-y-4"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-green-600">
-                          ₹{product.price}
-                        </span>
-                        {product.originalPrice > product.price && (
-                          <span className="text-lg text-gray-500 line-through">
-                            ₹{product.originalPrice}
-                          </span>
-                        )}
-                        {product.originalPrice > product.price && (
-                          <Badge
-                            variant="destructive"
-                            className="bg-red-100 text-red-800"
-                          >
-                            {Math.round(
-                              ((product.originalPrice - product.price) /
-                                product.originalPrice) *
-                                100
-                            )}
-                            % OFF
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div
-                        className={`flex gap-2 ${
-                          viewMode === "grid" ? "w-full" : ""
-                        }`}
-                      >
-                        {viewMode === "list" && (
-                          <Link to={`/product/${product.id}`}>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-green-300 text-green-600 hover:bg-green-50"
-                            >
-                              View Details
-                            </Button>
-                          </Link>
-                        )}
-
-                        {(() => {
-                          const cartItem = getCartItem(product.id);
-                          const isOutOfStock = product.stockQuantity === 0;
-                          const currentCartQuantity = cartItem
-                            ? cartItem.quantity
-                            : 0;
-                          const wouldExceedStock =
-                            currentCartQuantity >= product.stockQuantity;
-
-                          if (isOutOfStock) {
-                            return (
-                              <Button
-                                disabled
                                 variant="secondary"
-                                className={viewMode === "grid" ? "flex-1" : ""}
+                                className="bg-green-100 text-green-800 font-medium text-xs"
                               >
-                                Out of Stock
-                              </Button>
-                            );
-                          }
+                                {product.category}
+                              </Badge>
+                              <h3 className="font-bold text-gray-900 text-lg leading-tight">
+                                {product.name}
+                              </h3>
+                            </div>
+                          </div>
 
-                          if (cartItem) {
-                            return (
-                              <div
-                                className={`flex items-center gap-2 ${
-                                  viewMode === "grid"
-                                    ? "flex-1 justify-between"
-                                    : ""
-                                }`}
-                              >
-                                <div className="flex items-center border border-gray-300 rounded-md">
+                          <p className="text-xs text-gray-500 font-medium">
+                            📍 {product.origin} • {product.weight}g
+                          </p>
+
+                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                            {product.description}
+                          </p>
+
+                          {/* Price & Rating Row */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl font-bold text-green-600">
+                                ₹{product.price}
+                              </span>
+                              {product.originalPrice > product.price && (
+                                <span className="text-sm text-gray-500 line-through">
+                                  ₹{product.originalPrice}
+                                </span>
+                              )}
+                              {product.originalPrice > product.price && (
+                                <Badge
+                                  variant="destructive"
+                                  className="bg-red-100 text-red-800 text-xs font-bold"
+                                >
+                                  {Math.round(
+                                    ((product.originalPrice - product.price) /
+                                      product.originalPrice) *
+                                      100
+                                  )}
+                                  % OFF
+                                </Badge>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-3.5 w-3.5 ${
+                                      i < Math.floor(product.rating || 0)
+                                        ? "fill-yellow-400 text-yellow-400"
+                                        : "fill-gray-200 text-gray-300"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-sm font-bold text-gray-900">
+                                {product.rating || 0}
+                              </span>
+                              <span className="text-xs text-gray-600">
+                                ({product.reviewCount || 0})
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Features & Stock Row */}
+                          <div className="flex items-center justify-between pb-1">
+                            <div className="flex gap-1.5">
+                              {product.features &&
+                                product.features
+                                  .slice(0, 2)
+                                  .map((feature, idx) => (
+                                    <Badge
+                                      key={idx}
+                                      variant="outline"
+                                      className="border-green-200 text-green-700 text-xs px-2 py-1 font-medium"
+                                    >
+                                      {feature}
+                                    </Badge>
+                                  ))}
+                            </div>
+
+                            <div>
+                              {product.stockQuantity === 0 ? (
+                                <span className="inline-flex items-center text-red-700 text-xs font-bold bg-red-50 px-2 py-1 rounded border border-red-200">
+                                  ❌ Out of Stock
+                                </span>
+                              ) : product.stockQuantity <= 3 ? (
+                                <span className="inline-flex items-center text-orange-700 text-xs font-bold bg-orange-50 px-2 py-1 rounded border border-orange-200">
+                                  ⚠️ Only {product.stockQuantity} left!
+                                </span>
+                              ) : product.stockQuantity <= 10 ? (
+                                <span className="inline-flex items-center text-yellow-700 text-xs font-medium bg-yellow-50 px-2 py-1 rounded border border-yellow-200">
+                                  🔔 Limited Stock
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center text-green-700 text-xs font-medium bg-green-50 px-2 py-1 rounded border border-green-200">
+                                  ✅ In Stock
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right Section - Actions Only */}
+                        <div className="w-40 flex flex-col justify-center space-y-2.5 pl-4 border-l border-gray-200">
+                          {/* Actions Section */}
+                          <div className="space-y-2.5">
+                            {(() => {
+                              const cartItem = getCartItem(product.id);
+                              const isOutOfStock = product.stockQuantity === 0;
+                              const currentCartQuantity = cartItem
+                                ? cartItem.quantity
+                                : 0;
+                              const wouldExceedStock =
+                                currentCartQuantity >= product.stockQuantity;
+
+                              if (isOutOfStock) {
+                                return (
+                                  <>
+                                    <Button
+                                      disabled
+                                      variant="secondary"
+                                      className="w-full h-9 font-semibold text-sm"
+                                      size="sm"
+                                    >
+                                      Out of Stock
+                                    </Button>
+                                    <Link
+                                      to={`/product/${product.id}`}
+                                      className="w-full"
+                                    >
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full h-9 border-green-300 text-green-600 hover:bg-green-50 font-semibold text-sm"
+                                      >
+                                        View Details
+                                      </Button>
+                                    </Link>
+                                  </>
+                                );
+                              }
+
+                              if (cartItem) {
+                                return (
+                                  <>
+                                    <div className="flex items-center justify-center bg-gray-50 border border-gray-300 rounded p-1.5">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 w-7 p-0 hover:bg-white"
+                                        onClick={() =>
+                                          handleQuantityChange(
+                                            product,
+                                            cartItem.quantity - 1
+                                          )
+                                        }
+                                        disabled={loadingProducts[product.id]}
+                                      >
+                                        <Minus className="h-3 w-3" />
+                                      </Button>
+                                      <span className="px-3 py-1 text-sm font-bold min-w-[2.5rem] text-center">
+                                        {cartItem.quantity}
+                                      </span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 w-7 p-0 hover:bg-white"
+                                        onClick={() =>
+                                          handleQuantityChange(
+                                            product,
+                                            cartItem.quantity + 1
+                                          )
+                                        }
+                                        disabled={
+                                          loadingProducts[product.id] ||
+                                          cartItem.quantity >=
+                                            product.stockQuantity
+                                        }
+                                      >
+                                        <Plus className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                    <Link
+                                      to={`/product/${product.id}`}
+                                      className="w-full"
+                                    >
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full h-9 border-green-300 text-green-600 hover:bg-green-50 font-semibold text-sm"
+                                      >
+                                        Details
+                                      </Button>
+                                    </Link>
+                                  </>
+                                );
+                              }
+
+                              return (
+                                <>
                                   <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0"
-                                    onClick={() =>
-                                      handleQuantityChange(
-                                        product,
-                                        cartItem.quantity - 1
-                                      )
-                                    }
-                                    disabled={loadingProducts[product.id]}
-                                  >
-                                    <Minus className="h-3 w-3" />
-                                  </Button>
-                                  <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
-                                    {cartItem.quantity}
-                                  </span>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0"
-                                    onClick={() =>
-                                      handleQuantityChange(
-                                        product,
-                                        cartItem.quantity + 1
-                                      )
-                                    }
+                                    onClick={() => handleAddToCart(product)}
                                     disabled={
                                       loadingProducts[product.id] ||
-                                      cartItem.quantity >= product.stockQuantity
+                                      wouldExceedStock
                                     }
+                                    className="w-full h-9 bg-green-600 hover:bg-green-700 font-semibold text-sm"
+                                    size="sm"
                                   >
-                                    <Plus className="h-3 w-3" />
+                                    <ShoppingCart className="h-4 w-4 mr-1" />
+                                    {wouldExceedStock
+                                      ? "Max Qty"
+                                      : loadingProducts[product.id]
+                                      ? "Adding..."
+                                      : "Add to Cart"}
                                   </Button>
-                                </div>
-                                {viewMode === "grid" && (
+                                  <Link
+                                    to={`/product/${product.id}`}
+                                    className="w-full"
+                                  >
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="w-full h-9 border-green-300 text-green-600 hover:bg-green-50 font-semibold text-sm"
+                                    >
+                                      Details
+                                    </Button>
+                                  </Link>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      /* Grid View Layout */
+                      <>
+                        {/* Top Section - Category, Title, Origin */}
+                        <div className="space-y-2">
+                          <Badge
+                            variant="secondary"
+                            className="bg-green-100 text-green-800"
+                          >
+                            {product.category}
+                          </Badge>
+
+                          <h3 className="font-semibold text-gray-900 text-xl">
+                            {product.name}
+                          </h3>
+
+                          <p className="text-sm text-gray-500">
+                            Origin: {product.origin} • {product.weight}g
+                          </p>
+
+                          {/* Description */}
+                          <p className="text-gray-600 text-sm line-clamp-2">
+                            {product.description}
+                          </p>
+                        </div>
+
+                        {/* Middle Section - Features & Stock Status */}
+                        <div className="space-y-3">
+                          {/* Features */}
+                          <div className="flex flex-wrap gap-1.5">
+                            {product.features &&
+                              product.features
+                                .slice(0, 3)
+                                .map((feature, idx) => (
+                                  <Badge
+                                    key={idx}
+                                    variant="outline"
+                                    className="border-green-200 text-green-800 text-xs px-2 py-0.5"
+                                  >
+                                    {feature}
+                                  </Badge>
+                                ))}
+                          </div>
+
+                          {/* Stock Status Warning */}
+                          {product.stockQuantity === 0 ? (
+                            <div>
+                              <span className="text-red-700 text-xs font-bold bg-red-100 px-2 py-1 rounded border border-red-300">
+                                ❌ Out of Stock
+                              </span>
+                            </div>
+                          ) : product.stockQuantity <= 3 ? (
+                            <div>
+                              <span className="text-orange-700 text-xs font-bold bg-orange-100 px-2 py-1 rounded border border-orange-300">
+                                ⚠️ Only {product.stockQuantity} left!
+                              </span>
+                            </div>
+                          ) : product.stockQuantity <= 10 ? (
+                            <div>
+                              <span className="text-yellow-700 text-xs font-medium bg-yellow-100 px-2 py-1 rounded border border-yellow-300">
+                                🔔 Limited Stock ({product.stockQuantity})
+                              </span>
+                            </div>
+                          ) : (
+                            <div>
+                              <span className="text-green-700 text-xs font-medium bg-green-100 px-2 py-1 rounded border border-green-300">
+                                ✅ In Stock
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Bottom Section - Price & Actions */}
+                        <div className="space-y-3 mt-auto">
+                          {/* Price */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl font-bold text-green-600">
+                              ₹{product.price}
+                            </span>
+                            {product.originalPrice > product.price && (
+                              <>
+                                <span className="text-sm text-gray-500 line-through">
+                                  ₹{product.originalPrice}
+                                </span>
+                                <Badge
+                                  variant="destructive"
+                                  className="bg-red-100 text-red-800 text-xs"
+                                >
+                                  {Math.round(
+                                    ((product.originalPrice - product.price) /
+                                      product.originalPrice) *
+                                      100
+                                  )}
+                                  % OFF
+                                </Badge>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex gap-2">
+                            {(() => {
+                              const cartItem = getCartItem(product.id);
+                              const isOutOfStock = product.stockQuantity === 0;
+                              const currentCartQuantity = cartItem
+                                ? cartItem.quantity
+                                : 0;
+                              const wouldExceedStock =
+                                currentCartQuantity >= product.stockQuantity;
+
+                              if (isOutOfStock) {
+                                return (
+                                  <>
+                                    <Button
+                                      disabled
+                                      variant="secondary"
+                                      className="flex-1"
+                                      size="sm"
+                                    >
+                                      Out of Stock
+                                    </Button>
+                                    <Link to={`/product/${product.id}`}>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="border-green-300 text-green-600 hover:bg-green-50"
+                                      >
+                                        View Details
+                                      </Button>
+                                    </Link>
+                                  </>
+                                );
+                              }
+
+                              if (cartItem) {
+                                return (
+                                  <>
+                                    <div className="flex items-center border border-gray-300 rounded-md">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        onClick={() =>
+                                          handleQuantityChange(
+                                            product,
+                                            cartItem.quantity - 1
+                                          )
+                                        }
+                                        disabled={loadingProducts[product.id]}
+                                      >
+                                        <Minus className="h-3 w-3" />
+                                      </Button>
+                                      <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
+                                        {cartItem.quantity}
+                                      </span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        onClick={() =>
+                                          handleQuantityChange(
+                                            product,
+                                            cartItem.quantity + 1
+                                          )
+                                        }
+                                        disabled={
+                                          loadingProducts[product.id] ||
+                                          cartItem.quantity >=
+                                            product.stockQuantity
+                                        }
+                                      >
+                                        <Plus className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                    <Link to={`/product/${product.id}`}>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="border-green-300 text-green-600 hover:bg-green-50"
+                                      >
+                                        View Details
+                                      </Button>
+                                    </Link>
+                                  </>
+                                );
+                              }
+
+                              return (
+                                <>
+                                  <Button
+                                    onClick={() => handleAddToCart(product)}
+                                    disabled={
+                                      loadingProducts[product.id] ||
+                                      wouldExceedStock
+                                    }
+                                    className="bg-green-600 hover:bg-green-700 flex-1"
+                                    size="sm"
+                                  >
+                                    <ShoppingCart className="h-4 w-4 mr-1" />
+                                    {wouldExceedStock
+                                      ? "Max Qty"
+                                      : loadingProducts[product.id]
+                                      ? "Adding..."
+                                      : "Add to Cart"}
+                                  </Button>
                                   <Link to={`/product/${product.id}`}>
                                     <Button
                                       variant="outline"
                                       size="sm"
                                       className="border-green-300 text-green-600 hover:bg-green-50"
                                     >
-                                      View Details
+                                      Details
                                     </Button>
                                   </Link>
-                                )}
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <>
-                              <Button
-                                onClick={() => handleAddToCart(product)}
-                                disabled={
-                                  loadingProducts[product.id] ||
-                                  wouldExceedStock
-                                }
-                                className={`bg-green-600 hover:bg-green-700 ${
-                                  viewMode === "grid" ? "flex-1" : ""
-                                }`}
-                                size="sm"
-                              >
-                                <ShoppingCart className="h-4 w-4 mr-2" />
-                                {wouldExceedStock
-                                  ? "Max Quantity Reached"
-                                  : loadingProducts[product.id]
-                                  ? "Adding..."
-                                  : "Add to Cart"}
-                              </Button>
-                              {viewMode === "grid" && (
-                                <Link to={`/product/${product.id}`}>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-green-300 text-green-600 hover:bg-green-50"
-                                  >
-                                    View Details
-                                  </Button>
-                                </Link>
-                              )}
-                            </>
-                          );
-                        })()}
-                      </div>
-                    </div>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      </>
+                    )}
 
                     {/* Meta Information - Only in Grid View */}
                     {viewMode === "grid" && (
@@ -732,7 +966,9 @@ const ProductsPage = () => {
                                 🔔 Limited Stock
                               </span>
                             ) : (
-                              <span className="text-gray-500">Available</span>
+                              <span className="text-green-600">
+                                ✅ In Stock
+                              </span>
                             )}
                           </div>
                         </div>
