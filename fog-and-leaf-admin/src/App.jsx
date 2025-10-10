@@ -9,7 +9,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import OrdersPage from "./pages/OrdersPage";
-import ShippingPage from "./pages/ShippingPage";
 import ProductsPage from "./pages/ProductsPage";
 import InventoryPage from "./pages/InventoryPage";
 import ReportsPage from "./pages/ReportsPage";
@@ -33,14 +32,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <OrdersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/shipping"
-            element={
-              <ProtectedRoute>
-                <ShippingPage />
               </ProtectedRoute>
             }
           />

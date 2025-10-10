@@ -7,37 +7,29 @@ const ShippingStatusBadge = ({ status }) => {
           text: "text-yellow-800",
           label: "Pending",
         };
-      case "shipped":
+      case "confirmed":
         return {
           bg: "bg-blue-100",
           text: "text-blue-800",
-          label: "Shipped",
+          label: "Confirmed",
         };
-      case "in_transit":
-      case "in-transit":
+      case "processing":
         return {
           bg: "bg-purple-100",
           text: "text-purple-800",
-          label: "In Transit",
+          label: "Processing",
         };
-      case "out_for_delivery":
-      case "out-for-delivery":
+      case "shipped":
         return {
-          bg: "bg-orange-100",
-          text: "text-orange-800",
-          label: "Out for Delivery",
+          bg: "bg-indigo-100",
+          text: "text-indigo-800",
+          label: "Shipped",
         };
       case "delivered":
         return {
           bg: "bg-green-100",
           text: "text-green-800",
           label: "Delivered",
-        };
-      case "returned":
-        return {
-          bg: "bg-red-100",
-          text: "text-red-800",
-          label: "Returned",
         };
       case "cancelled":
         return {

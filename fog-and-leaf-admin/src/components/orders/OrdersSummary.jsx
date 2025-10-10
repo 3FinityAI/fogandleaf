@@ -1,8 +1,19 @@
 import { X } from "lucide-react";
+import OrderStats from "./OrderStats";
 
-const OrdersSummary = ({ pagination, filters, loading, error, onRetry }) => {
+const OrdersSummary = ({
+  pagination,
+  filters,
+  loading,
+  error,
+  onRetry,
+  orderStats,
+}) => {
   return (
     <>
+      {/* Order Status Cards */}
+      <OrderStats stats={orderStats} loading={loading} />
+
       {/* Results Summary */}
       {!loading && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

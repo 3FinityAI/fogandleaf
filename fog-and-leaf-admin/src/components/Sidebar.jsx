@@ -4,9 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import {
   LayoutDashboard,
   ShoppingBag,
-  Truck,
   Package,
-  Archive,
   BarChart3,
   LogOut,
   Menu,
@@ -28,7 +26,6 @@ const Sidebar = () => {
   const navigationItems = [
     { path: "/", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/orders", icon: ShoppingBag, label: "Orders" },
-    { path: "/shipping", icon: Truck, label: "Shipping" },
     { path: "/products", icon: Package, label: "Products" },
     { path: "/reports", icon: BarChart3, label: "Reports" },
   ];

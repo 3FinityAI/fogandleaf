@@ -31,8 +31,8 @@ const QuickStatsGrid = ({ stats }) => (
       trend="up"
     />
     <StatCard
-      title="Pending Orders"
-      value={formatNumber(stats.pendingOrders)}
+      title="Confirmed Orders"
+      value={formatNumber(stats.confirmedOrders)}
       change={`${stats.monthlyOrders || 0} orders this month`}
       icon={Clock}
       color="orange"

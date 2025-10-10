@@ -12,10 +12,6 @@ import {
   deleteAdminOrder,
   exportOrders,
 
-  // Shipping Management
-  getShippingOrders,
-  bulkUpdateShipping,
-
   // Product Management (for inventory only)
   getAdminProducts,
   updateProductStock,
@@ -23,8 +19,7 @@ import {
   updateAdminProduct,
   deleteAdminProduct,
 
-  // Reports
-  getAdminReports,
+  // Reports functionality moved to dedicated reports.routes.js
 } from "../controllers/admin.controller.js";
 
 const router = Router();
@@ -44,10 +39,6 @@ router.put("/orders/:id/status", updateOrderStatus);
 router.put("/orders/:id/payment", updatePaymentStatus);
 router.delete("/orders/:id", deleteAdminOrder);
 
-// ==================== SHIPPING MANAGEMENT ====================
-router.get("/shipping", getShippingOrders);
-router.put("/shipping/bulk-update", bulkUpdateShipping);
-
 // ==================== PRODUCT MANAGEMENT ====================
 router.get("/products", getAdminProducts);
 router.post("/products", createAdminProduct);
@@ -55,7 +46,6 @@ router.put("/products/:id", updateAdminProduct);
 router.put("/products/:id/stock", updateProductStock);
 router.delete("/products/:id", deleteAdminProduct);
 
-// ==================== REPORTS & ANALYTICS ====================
-router.get("/reports", getAdminReports);
+// Reports & Analytics now handled by dedicated reports.routes.js at /api/admin/reports
 
 export default router;

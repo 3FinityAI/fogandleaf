@@ -78,8 +78,7 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
         isActive: product.isActive !== undefined ? product.isActive : true,
         inStock: product.inStock !== undefined ? product.inStock : true,
       });
-    } else if (mode === "create") {
-      // Reset form for new product
+    } else {
       setFormData({
         name: "",
         category: "",
@@ -278,17 +277,14 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
   const isDeleting = mode === "delete";
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            {mode === "view" && <Eye className="h-6 w-6 text-blue-600" />}
-            {mode === "edit" && <Edit3 className="h-6 w-6 text-orange-600" />}
-            {mode === "create" && (
-              <Package className="h-6 w-6 text-green-600" />
-            )}
-            {mode === "delete" && <Trash2 className="h-6 w-6 text-red-600" />}
+            {mode === "view" && <Eye className="h-5 w-5 text-blue-600" />}
+            {mode === "edit" && <Edit3 className="h-5 w-5 text-green-600" />}
+            {mode === "create" && <Package className="h-5 w-5 text-blue-600" />}
+            {mode === "delete" && <Trash2 className="h-5 w-5 text-red-600" />}
             <h2 className="text-xl font-semibold text-gray-900">
               {mode === "view" && "View Product"}
               {mode === "edit" && "Edit Product"}
@@ -298,17 +294,16 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
-              {error}
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700">{error}</p>
             </div>
           )}
 
@@ -707,7 +702,7 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>

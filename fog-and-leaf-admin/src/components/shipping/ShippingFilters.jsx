@@ -102,14 +102,15 @@ const ShippingFilters = ({ filters, onFiltersChange, onClearFilters }) => {
             onChange={(e) => handleFilterChange("status", e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="shipped">Shipped</option>
-            <option value="in_transit">In Transit</option>
-            <option value="out_for_delivery">Out for Delivery</option>
-            <option value="delivered">Delivered</option>
-            <option value="returned">Returned</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="">All Shipping Statuses</option>
+            <option value="shipped,delivered">Shipped & Delivered</option>
+            <option value="shipped">Shipped Only</option>
+            <option value="delivered">Delivered Only</option>
+            <option value="cancelled">Cancelled/Returned</option>
+            {/* Advanced filters for order preparation */}
+            <option value="confirmed,processing">Ready to Ship</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="processing">Being Prepared</option>
           </select>
         </div>
 

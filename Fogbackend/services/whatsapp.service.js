@@ -36,7 +36,7 @@ We'll keep you updated on your order status.`);
   const itemList = items
     .map((item) => `${item.quantity} x ${item.name}`)
     .join(", ");
-
+5
   const messageBody = `🍃 *Fog & Leaf Tea Co.*
 
 ✅ *Order Confirmed!*
@@ -54,3 +54,4 @@ We'll keep you updated on your order status.`;
     body: messageBody,
   });
 }
+5

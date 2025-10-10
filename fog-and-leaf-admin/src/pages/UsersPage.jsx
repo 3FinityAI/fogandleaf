@@ -351,8 +351,8 @@ const UsersTable = ({ users, onViewUser, onUpdateUser }) => (
                 <div className="flex items-center gap-1 text-sm font-medium text-secondary-900">
                   <DollarSign className="w-3 h-3 text-secondary-400" />
                   {user.totalSpent
-                    ? `$${parseFloat(user.totalSpent).toFixed(2)}`
-                    : "$0.00"}
+                    ? `₹${parseFloat(user.totalSpent).toFixed(2)}`
+                    : "₹0.00"}
                 </div>
               </td>
               <td className="py-4 px-2 text-sm text-secondary-600">

@@ -320,10 +320,10 @@ const ReportsPage = () => {
                 title="Total Revenue"
                 value={
                   reportData?.overview?.totalRevenue
-                    ? `$${parseFloat(reportData.overview.totalRevenue).toFixed(
+                    ? `₹${parseFloat(reportData.overview.totalRevenue).toFixed(
                         2
                       )}`
-                    : "$0.00"
+                    : "₹0.00"
                 }
                 change={
                   reportData?.overview?.revenueChange
@@ -386,10 +386,10 @@ const ReportsPage = () => {
                 title="Avg Order Value"
                 value={
                   reportData?.overview?.avgOrderValue
-                    ? `$${parseFloat(reportData.overview.avgOrderValue).toFixed(
+                    ? `₹${parseFloat(reportData.overview.avgOrderValue).toFixed(
                         2
                       )}`
-                    : "$0.00"
+                    : "₹0.00"
                 }
                 change={
                   reportData?.overview?.aovChange

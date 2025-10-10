@@ -13,11 +13,16 @@ export const getProducts = async (req, res) => {
       search,
       sortBy = "createdAt",
       sortOrder = "DESC",
-      isActive = true,
+      isActive,
     } = req.query;
 
     const offset = (page - 1) * limit;
-    const where = { isActive };
+    const where = {};
+
+    // Only filter by isActive if explicitly provided
+    if (isActive !== undefined) {
+      where.isActive = isActive === "true";
+    }
 
     // Category filter
     if (category) {
@@ -101,7 +106,6 @@ export const getCategories = async (req, res) => {
   try {
     const categories = await Product.findAll({
       attributes: ["category"],
-      where: { isActive: true },
       group: ["category"],
       raw: true,
     });

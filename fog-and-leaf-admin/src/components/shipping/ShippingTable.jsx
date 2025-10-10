@@ -19,19 +19,19 @@ const ShippingTable = ({ shipments, loading, onManageShipment }) => {
                 Order Details
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tracking Info
+                Customer
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Products
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Amount
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Shipping Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Carrier
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Destination
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ship Date
+                Tracking
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Action
@@ -70,47 +70,46 @@ const ShippingTable = ({ shipments, loading, onManageShipment }) => {
                   shipment.orderNumber ||
                   shipment.order?.orderNumber ||
                   `#${shipment.orderId || shipment.id}`;
-                const trackingNumber = shipment.trackingNumber || "N/A";
-                const carrier = shipment.carrier || "N/A";
+                const trackingNumber =
+                  shipment.trackingNumber || "Not assigned";
+                const carrier = shipment.carrier || "Standard";
                 const status =
                   shipment.status || shipment.shippingStatus || "pending";
                 const customerName =
                   shipment.customerName ||
-                  shipment.order?.shippingFirstName +
-                    " " +
-                    shipment.order?.shippingLastName ||
-                  "N/A";
+                  (shipment.order?.shippingFirstName &&
+                  shipment.order?.shippingLastName
+                    ? `${shipment.order.shippingFirstName} ${shipment.order.shippingLastName}`
+                    : shipment.user?.firstname && shipment.user?.lastname
+                    ? `${shipment.user.firstname} ${shipment.user.lastname}`
+                    : "N/A");
+
+                // Calculate total amount and product count
+                const totalAmount =
+                  shipment.totalAmount || shipment.order?.totalAmount || 0;
+                const productCount =
+                  shipment.products?.length ||
+                  shipment.order?.products?.length ||
+                  0;
 
                 // Safe date formatting
-                let shipDate = "N/A";
+                let orderDate = "N/A";
                 try {
                   const dateValue =
-                    shipment.shippedAt ||
-                    shipment.createdAt ||
-                    shipment.created_at;
+                    shipment.createdAt || shipment.order?.createdAt;
                   if (dateValue) {
-                    shipDate = new Date(dateValue).toLocaleDateString("en-IN", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    });
+                    orderDate = new Date(dateValue).toLocaleDateString(
+                      "en-IN",
+                      {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      }
+                    );
                   }
                 } catch (error) {
-                  console.warn(
-                    "⚠️ Invalid ship date for shipment:",
-                    shipment.id,
-                    error
-                  );
+                  console.warn("⚠️ Invalid order date:", error);
                 }
-
-                const destination =
-                  `${
-                    shipment.shippingCity || shipment.order?.shippingCity || ""
-                  }, ${
-                    shipment.shippingState ||
-                    shipment.order?.shippingState ||
-                    ""
-                  }`.replace(/^, |, $/, "") || "N/A";
 
                 return (
                   <tr key={shipment.id} className="hover:bg-gray-50">
@@ -125,22 +124,30 @@ const ShippingTable = ({ shipments, loading, onManageShipment }) => {
                             {orderNumber}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {customerName}
+                            {orderDate}
                           </div>
                         </div>
                       </div>
                     </td>
 
-                    {/* Tracking Info */}
+                    {/* Customer */}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm">
-                        <div className="font-medium text-gray-900 flex items-center gap-1">
-                          <Truck className="h-4 w-4 text-gray-400" />
-                          {trackingNumber}
-                        </div>
-                        <div className="text-gray-500 text-xs mt-1">
-                          Click manage to update
-                        </div>
+                      <div className="text-sm text-gray-900">
+                        {customerName}
+                      </div>
+                    </td>
+
+                    {/* Products */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {productCount} item{productCount !== 1 ? "s" : ""}
+                      </div>
+                    </td>
+
+                    {/* Amount */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        ₹{totalAmount}
                       </div>
                     </td>
 
@@ -149,26 +156,16 @@ const ShippingTable = ({ shipments, loading, onManageShipment }) => {
                       <ShippingStatusBadge status={status} />
                     </td>
 
-                    {/* Carrier */}
+                    {/* Tracking */}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 font-medium">
-                        {carrier.toUpperCase()}
-                      </div>
-                    </td>
-
-                    {/* Destination */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 flex items-center gap-1">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        {destination}
-                      </div>
-                    </td>
-
-                    {/* Ship Date */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-gray-400" />
-                        {shipDate}
+                      <div className="text-sm">
+                        <div className="font-medium text-gray-900 flex items-center gap-1">
+                          <Truck className="h-4 w-4 text-gray-400" />
+                          {trackingNumber}
+                        </div>
+                        <div className="text-gray-500 text-xs mt-1">
+                          {carrier}
+                        </div>
                       </div>
                     </td>
 

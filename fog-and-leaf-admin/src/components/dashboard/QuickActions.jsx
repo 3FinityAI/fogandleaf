@@ -37,9 +37,9 @@ const QuickActions = () => {
     },
     {
       icon: ShoppingBag,
-      label: "Pending Orders",
+      label: "Confirmed Orders",
       description: "Orders awaiting processing",
-      path: "/orders?status=pending",
+      path: "/orders?status=confirmed",
       color: "text-orange-600 bg-orange-50 hover:bg-orange-100",
     },
     {

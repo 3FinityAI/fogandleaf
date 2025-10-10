@@ -116,7 +116,7 @@ const ProductPerformanceTable = ({
                           {product.name}
                         </div>
                         <div className="text-xs text-secondary-500">
-                          ${parseFloat(product.price || 0).toFixed(2)}
+                          ₹{parseFloat(product.price || 0).toFixed(2)}
                         </div>
                       </div>
                     </div>

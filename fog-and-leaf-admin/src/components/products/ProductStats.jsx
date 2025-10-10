@@ -4,40 +4,48 @@ import {
   TrendingUp,
   AlertTriangle,
   Eye,
+  XCircle,
+  IndianRupeeIcon,
 } from "lucide-react";
 
 const ProductStats = ({ stats, loading }) => {
   const statItems = [
     {
       name: "Total Products",
-      value: stats.total,
+      value: stats?.totalProducts || 0,
       icon: Package,
       color: "text-blue-600 bg-blue-100",
     },
     {
       name: "Active",
-      value: stats.active,
+      value: stats?.activeProducts || 0,
       icon: Eye,
       color: "text-green-600 bg-green-100",
     },
     {
       name: "Low Stock",
-      value: stats.lowStock,
+      value: stats?.lowStockProducts || 0,
       icon: AlertTriangle,
       color: "text-orange-600 bg-orange-100",
     },
     {
-      name: "Revenue",
-      value: `$${stats.revenue?.toLocaleString() || 0}`,
-      icon: DollarSign,
-      color: "text-green-600 bg-green-100",
+      name: "Out of Stock",
+      value: stats?.outOfStockProducts || 0,
+      icon: XCircle,
+      color: "text-red-600 bg-red-100",
     },
     {
-      name: "Trending",
-      value: stats.trending,
-      icon: TrendingUp,
-      color: "text-purple-600 bg-purple-100",
+      name: "Inventory Value",
+      value: `₹${Math.round(stats?.totalRevenue || 0).toLocaleString("en-IN")}`,
+      icon: IndianRupeeIcon,
+      color: "text-green-600 bg-green-100",
     },
+    // {
+    //   name: "Avg Rating",
+    //   value: stats?.averageRating || "0.0",
+    //   icon: TrendingUp,
+    //   color: "text-purple-600 bg-purple-100",
+    // },
   ];
 
   return (

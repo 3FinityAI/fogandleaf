@@ -64,10 +64,10 @@ export const getStatCardColors = (color) => {
 export const generateAlerts = (stats) => {
   const alerts = [];
 
-  if (stats.pendingOrders > 0) {
+  if (stats.confirmedOrders > 0) {
     alerts.push({
       type: "warning",
-      message: `${stats.pendingOrders} pending orders need attention`,
+      message: `${stats.confirmedOrders} confirmed orders need processing`,
       action: "View Orders",
       link: "/orders",
     });

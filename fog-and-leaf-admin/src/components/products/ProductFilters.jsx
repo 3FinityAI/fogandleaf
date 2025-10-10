@@ -1,18 +1,25 @@
 import { Search, Filter, RotateCcw } from "lucide-react";
 
-const ProductFilters = ({ filters, onFilterChange }) => {
+const ProductFilters = ({
+  filters,
+  onFilterChange,
+  categories = [],
+  onClearFilters,
+}) => {
   const handleFilterUpdate = (key, value) => {
     onFilterChange({ ...filters, [key]: value });
   };
 
   const clearFilters = () => {
-    onFilterChange({
+    const clearedFilters = {
       status: "",
       category: "",
       priceRange: { min: "", max: "" },
       stockStatus: "",
       search: "",
-    });
+    };
+    onFilterChange(clearedFilters);
+    if (onClearFilters) onClearFilters();
   };
 
   return (
@@ -63,9 +70,12 @@ const ProductFilters = ({ filters, onFilterChange }) => {
           className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">All Categories</option>
-          <option value="clothing">Clothing</option>
-          <option value="accessories">Accessories</option>
-          <option value="shoes">Shoes</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category.charAt(0).toUpperCase() +
+                category.slice(1).replace(/([A-Z])/g, " $1")}
+            </option>
+          ))}
         </select>
 
         {/* Stock Status */}

@@ -81,9 +81,9 @@ export const getAdminDashboard = async (req, res) => {
       limit: 10,
     });
 
-    // Pending orders count
-    const pendingOrders = await CustomerOrder.count({
-      where: { status: "pending" },
+    // Confirmed orders count (orders needing admin attention)
+    const confirmedOrders = await CustomerOrder.count({
+      where: { status: "confirmed" },
     });
 
     // Out of stock products count
@@ -101,7 +101,7 @@ export const getAdminDashboard = async (req, res) => {
           monthlyOrders: monthlyOrders || 0,
           monthlyRevenue: parseFloat(monthlyRevenue || 0),
           totalRevenue: parseFloat(yearlyRevenue || 0),
-          pendingOrders: pendingOrders || 0,
+          confirmedOrders: confirmedOrders || 0,
           lowStockProducts: lowStockProducts.length || 0,
           outOfStockProducts: outOfStockProducts || 0,
         },
