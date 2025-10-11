@@ -26,8 +26,8 @@ const app = express();
 app.use(
   cors({
     origin: [
-      process.env.FRONTEND_URL, // Main frontend
-      "http://localhost:3002", // Admin frontend
+      process.env.FRONTEND_URL1, // Main frontend
+      process.env.FRONTEND_URL2, // Admin frontend
     ],
     credentials: true, // allow cookies (for refresh token)
   })

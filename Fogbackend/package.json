@@ -11,7 +11,8 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:create": "node scripts/createDB.js",
-    "db:seed": "node scripts/seedProducts.js"
+    "db:seed": "node scripts/seedProducts.js",
+    "admin:create": "node scripts/createAdminUser.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
