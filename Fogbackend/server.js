@@ -43,6 +43,9 @@ app.use(logger);
 import "./config/passport.js";
 app.use(passport.initialize());
 
+app.get("/", (req, res) => {
+  res.send("WElcome to Fog and Leaf");
+});
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
