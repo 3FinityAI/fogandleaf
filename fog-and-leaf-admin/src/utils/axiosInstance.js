@@ -26,19 +26,31 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Only redirect to login if it's not the initial auth verification call
+    // Handle 401 errors more carefully
     if (error.response?.status === 401) {
-      const isAuthVerification =
-        error.config?.url?.includes("/auth/verify-admin");
+      const isAuthCall = error.config?.url?.includes("/auth/");
+      const isLoginPage = window.location.pathname === "/login";
 
-      if (!isAuthVerification) {
-        // Handle unauthorized access for other API calls
-        console.error("Unauthorized access - redirecting to login");
-        window.location.href = "/login";
+      // Only redirect if:
+      // 1. It's not an auth-related call (login, verify, etc.)
+      // 2. We're not already on the login page
+      // 3. The call was not aborted (timeout)
+      if (!isAuthCall && !isLoginPage && error.name !== "AbortError") {
+        console.warn("Unauthorized access - redirecting to login");
+        // Use a small delay to prevent conflicts with React Router
+        setTimeout(() => {
+          if (window.location.pathname !== "/login") {
+            window.location.href = "/login";
+          }
+        }, 100);
       }
-      // For auth verification calls, just let the error pass through
-      // so AuthContext can handle it properly
     }
+
+    // Handle network errors gracefully
+    if (error.code === "ERR_NETWORK") {
+      console.warn("Network error:", error.message);
+    }
+
     return Promise.reject(error);
   }
 );
