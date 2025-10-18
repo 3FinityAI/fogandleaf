@@ -25,10 +25,6 @@ router.post(
 // Delete single image
 router.delete("/image/:publicId", protect, isAdmin, deleteImage);
 
-// Test routes without auth (remove in production)
-router.post("/test/image", upload.single("image"), uploadImage);
-router.post("/test/images", upload.array("images", 10), uploadMultipleImages);
-
 // Multer error handling middleware - must be at the end
 router.use((err, req, res, next) => {
   // Handle Multer-specific errors

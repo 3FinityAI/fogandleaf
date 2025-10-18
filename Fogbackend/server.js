@@ -4,7 +4,6 @@ import passport from "passport";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import sequelize from "./config/db.js";
-// Import all models to ensure proper synchronization
 import "./models/index.js";
 import authRoutes from "./routes/auth.routes.js";
 import orderRoutes from "./routes/order.routes.js";
@@ -17,36 +16,31 @@ import adminRoutes from "./routes/admin.route.js";
 import shippingRoutes from "./routes/shipping.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 
-// Load env vars
 dotenv.config();
 
 const app = express();
 
-// Middleware
 app.use(
   cors({
     origin: [
       process.env.FRONTEND_URL1, // Main frontend
       process.env.FRONTEND_URL2, // Admin frontend
     ],
-    credentials: true, // allow cookies (for refresh token)
+    credentials: true,
   })
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser()); // Add cookie parser middleware
-
-// Logging middleware
+app.use(cookieParser());
 app.use(logger);
 
-// Passport config
 import "./config/passport.js";
 app.use(passport.initialize());
 
 app.get("/", (req, res) => {
   res.send("WElcome to Fog and Leaf");
 });
-// Routes
+
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
@@ -57,7 +51,6 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin/shipments", shippingRoutes);
 app.use("/api/upload", uploadRoutes);
 
-// Start server
 const PORT = process.env.PORT || 8000;
 
 const startServer = async () => {

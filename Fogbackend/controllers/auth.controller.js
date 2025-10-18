@@ -36,14 +36,14 @@ export const registerUser = async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 15 * 60 * 1000, // 15 min
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
@@ -91,29 +91,24 @@ export const loginUser = async (req, res) => {
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
 
-    // Save refresh token in DB - clear any existing refresh tokens first
+    // Save refresh token in DB
     user.refreshToken = refreshToken;
     await user.save();
-
-    console.log("Saved refresh token to database for user:", user.id);
-    console.log("Refresh token saved:", refreshToken);
 
     // Set cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
-
-    console.log("Set refresh token cookie:", refreshToken);
 
     return res.json({
       message: "Login successful",
@@ -164,20 +159,18 @@ export const loginAdmin = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    console.log("Admin login successful for:", user.email);
-
     // Set cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -201,11 +194,7 @@ export const loginAdmin = async (req, res) => {
 export const refreshAccessToken = async (req, res) => {
   const { refreshToken } = req.cookies;
 
-  console.log("Refresh token request received");
-  console.log("Refresh token present:", refreshToken ? "Yes" : "No");
-
   if (!refreshToken) {
-    console.log("No refresh token in cookies");
     return res.status(401).json({
       success: false,
       message: "No refresh token provided",
@@ -214,35 +203,17 @@ export const refreshAccessToken = async (req, res) => {
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    console.log("Refresh token decoded successfully for user:", decoded.id);
 
     const user = await User.findOne({
       where: { id: decoded.id, refreshToken },
     });
 
     if (!user) {
-      console.log("Debugging refresh token mismatch:");
-      console.log("Looking for user ID:", decoded.id);
-      console.log("With refresh token:", refreshToken);
-
-      // Check if user exists but with different refresh token
-      const userExists = await User.findByPk(decoded.id);
-      if (userExists) {
-        console.log("User exists but refresh token doesn't match");
-        console.log("DB refresh token:", userExists.refreshToken);
-        console.log("Cookie refresh token:", refreshToken);
-        console.log("Tokens match:", userExists.refreshToken === refreshToken);
-      } else {
-        console.log("User doesn't exist in database");
-      }
-
       return res.status(403).json({
         success: false,
         message: "Invalid refresh token",
       });
     }
-
-    console.log("User found, generating new access token for:", user.email);
 
     // Issue new access token
     const newAccessToken = generateAccessToken(user.id);
@@ -251,11 +222,10 @@ export const refreshAccessToken = async (req, res) => {
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 15 * 60 * 1000,
     });
 
-    console.log("Access token refreshed successfully for user:", user.email);
     return res.json({
       success: true,
       message: "Access token refreshed",
@@ -279,7 +249,6 @@ export const logoutUser = async (req, res) => {
       if (user) {
         user.refreshToken = null;
         await user.save();
-        console.log("Cleared refresh token for user:", user.email);
       }
     }
 
@@ -287,12 +256,12 @@ export const logoutUser = async (req, res) => {
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
     });
 
     return res.json({
@@ -305,12 +274,12 @@ export const logoutUser = async (req, res) => {
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
     });
 
     return res.status(500).json({
@@ -325,12 +294,7 @@ export const verifyToken = async (req, res) => {
   try {
     const { accessToken } = req.cookies;
 
-    console.log("Customer verify request received");
-    console.log("Cookies:", req.cookies);
-    console.log("Access token:", accessToken ? "Present" : "Missing");
-
     if (!accessToken) {
-      console.log("No access token in cookies");
       return res.status(401).json({
         success: false,
         message: "No access token provided",
@@ -338,13 +302,11 @@ export const verifyToken = async (req, res) => {
     }
 
     const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
-    console.log("Token decoded successfully:", decoded.id);
 
     // Fetch user from database
     const user = await User.findByPk(decoded.id);
 
     if (!user) {
-      console.log("User not found in database:", decoded.id);
       return res.status(401).json({
         success: false,
         message: "User not found",
@@ -353,14 +315,11 @@ export const verifyToken = async (req, res) => {
 
     // Check if user is a customer (not admin)
     if (user.role === "admin") {
-      console.log("Admin user attempting to access customer site:", user.email);
       return res.status(403).json({
         success: false,
         message: "Access denied. Admin users cannot access the customer site.",
       });
     }
-
-    console.log("Customer user verified successfully:", user.email);
 
     res.status(200).json({
       success: true,
@@ -388,11 +347,7 @@ export const verifyAdminToken = async (req, res) => {
   try {
     const { accessToken } = req.cookies;
 
-    console.log("Admin verify request received");
-    console.log("Access token:", accessToken ? "Present" : "Missing");
-
     if (!accessToken) {
-      console.log("No access token in cookies");
       return res.status(401).json({
         success: false,
         message: "No access token provided",
@@ -400,13 +355,11 @@ export const verifyAdminToken = async (req, res) => {
     }
 
     const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
-    console.log("Token decoded successfully:", decoded.id);
 
     // Fetch user from database
     const user = await User.findByPk(decoded.id);
 
     if (!user) {
-      console.log("User not found in database:", decoded.id);
       return res.status(401).json({
         success: false,
         message: "User not found",
@@ -415,17 +368,11 @@ export const verifyAdminToken = async (req, res) => {
 
     // Check if user is an admin
     if (user.role !== "admin") {
-      console.log(
-        "Non-admin user attempting to access admin site:",
-        user.email
-      );
       return res.status(403).json({
         success: false,
         message: "Access denied. Admin privileges required.",
       });
     }
-
-    console.log("Admin user verified successfully:", user.email);
 
     res.status(200).json({
       success: true,
@@ -471,14 +418,14 @@ export const socialSuccess = async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 

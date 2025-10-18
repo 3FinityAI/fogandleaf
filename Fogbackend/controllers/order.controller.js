@@ -39,22 +39,6 @@ export const createOrder = async (req, res) => {
     }
 
     // Create order
-    console.log("Creating order for user:", req.user.id);
-    console.log("Order payload:", {
-      userId: req.user.id,
-      status: "confirmed",
-      totalAmount,
-      subtotal,
-      shippingCost,
-      taxAmount,
-      paymentMethod,
-      paymentStatus: paymentMethod === "cod" ? "pending" : "pending",
-      shippingAddress,
-      contactEmail,
-      contactPhone,
-    });
-
-    // Generate order number with format: FOG + year + month + sequence
     const generateOrderNumber = async () => {
       const now = new Date();
       const year = now.getFullYear();
@@ -117,19 +101,9 @@ export const createOrder = async (req, res) => {
       { transaction }
     );
 
-    console.log(
-      "Order created with ID:",
-      order.id,
-      "Order Number:",
-      order.orderNumber
-    );
-
     // Create order items and validate stock
-    console.log("Processing cart items:", items);
     const orderProducts = [];
     for (const item of items) {
-      console.log("Processing item:", item);
-
       // Check if item has productId (from cart context) or id (direct product reference)
       const productId = item.productId || item.id;
 
@@ -197,7 +171,7 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    console.log("Order products to create:", orderProducts);
+    // Create order products in bulk
 
     await OrderProduct.bulkCreate(orderProducts, { transaction });
 
@@ -227,11 +201,9 @@ export const createOrder = async (req, res) => {
       );
 
       if (whatsappResult.status === "logged") {
-        console.log(
-          "WhatsApp notification logged (credentials not configured)"
-        );
+        // WhatsApp notification logged (credentials not configured)
       } else {
-        console.log("WhatsApp notification sent successfully");
+        // WhatsApp notification sent successfully
       }
     } catch (whatsappError) {
       console.error("Failed to send WhatsApp notification:", whatsappError);

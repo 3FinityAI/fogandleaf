@@ -280,7 +280,6 @@ export const getAdminOrderById = async (req, res) => {
         message: "Order not found",
       });
     }
-    console.log(order);
 
     res.json({
       success: true,

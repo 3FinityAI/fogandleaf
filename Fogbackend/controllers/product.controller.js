@@ -556,7 +556,7 @@ export const deleteProduct = async (req, res) => {
         if (publicIds.length > 0) {
           try {
             await cloudinary.api.delete_resources(publicIds);
-            console.log(`Deleted ${publicIds.length} images from Cloudinary`);
+            // Images deleted from Cloudinary
           } catch (cloudinaryError) {
             console.error(
               "Failed to delete images from Cloudinary:",

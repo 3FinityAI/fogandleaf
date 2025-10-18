@@ -23,7 +23,8 @@ A modern, responsive admin dashboard for managing the Fog & Leaf e-commerce plat
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 16+ 
+
+- Node.js 16+
 - Backend API running on port 5000
 
 ### Installation
@@ -61,14 +62,16 @@ src/
 ## 🎨 Design System
 
 **Color Coding:**
+
 - 🔵 **Blue**: Primary actions (Edit, Refresh, Manage)
-- 🟢 **Green**: Success actions (Export, Save, Create)  
+- 🟢 **Green**: Success actions (Export, Save, Create)
 - 🔴 **Red**: Destructive actions (Delete, Remove)
 - 🟠 **Orange**: Warning states (Low Stock, Pending)
 
 **Responsive Breakpoints:**
+
 - Mobile: `< 768px` - Card layouts
-- Tablet: `768px - 1024px` - Adapted layouts  
+- Tablet: `768px - 1024px` - Adapted layouts
 - Desktop: `> 1024px` - Full interface
 
 ## 📱 Mobile Experience
@@ -84,16 +87,19 @@ The admin panel is fully optimized for mobile devices:
 ## 🔧 Main Components
 
 **Dashboard:**
+
 - `DashboardPage` - Overview with key metrics
 - `RecentOrdersTable` - Latest order activity
 - `AlertsSection` - System notifications
 
 **Orders:**
+
 - `OrdersPage` - Complete order management
 - `OrdersTable` - Responsive order listing
 - `OrderManagementModal` - Order details & updates
 
 **Products:**
+
 - `ProductsPage` - Product management interface
 - `ProductTable` - Product listing with filters
 - `ProductManagementModal` - Product CRUD operations
@@ -114,31 +120,36 @@ npm run lint
 ## 🐛 Common Issues
 
 **Build Issues:**
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install
 ```
 
 **API Connection:**
+
 - Verify backend server is running on port 5000
 - Check CORS settings in backend
 - Confirm network connectivity
 
 **Image Uploads:**
+
 - Backend handles all image processing
 - Check backend configuration and file size limits
 
 ## � Development
 
 **Component Guidelines:**
+
 - Use functional components with hooks
 - Follow React best practices
 - Implement proper error boundaries
 - Add proper prop validation
 
 **File Naming:**
+
 - Components: `PascalCase.jsx`
-- Utilities: `camelCase.js`  
+- Utilities: `camelCase.js`
 - Constants: `UPPER_SNAKE_CASE.js`
 
 ## 🤝 Contributing
@@ -155,4 +166,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Built with ❤️ by the Fog & Leaf Team** • *Updated October 2025*
+**Built with ❤️ by the Fog & Leaf Team** • _Updated October 2025_

@@ -417,7 +417,7 @@ export const bulkUpdateStock = async (req, res) => {
       );
     }
 
-    console.log("Bulk Stock Movements:", movements);
+    // Process bulk stock movements
 
     await transaction.commit();
 
