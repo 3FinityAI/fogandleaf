@@ -22,7 +22,7 @@ const seedProducts = async () => {
       const existing = await Product.findOne({ where: { name: product.name } });
 
       if (!existing) {
-        await Product.create(product);
+        await Product.create(product.filter((_, key) => key !== "id"));
         console.log(`   ✓ Created: ${product.name}`);
         createdCount++;
       } else {

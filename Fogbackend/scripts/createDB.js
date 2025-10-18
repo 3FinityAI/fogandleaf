@@ -11,7 +11,6 @@ import "../models/products.model.js";
 import "../models/cart.model.js";
 import "../models/customerorder.model.js";
 import "../models/orderproduct.model.js";
-import "../models/stockmovement.model.js";
 
 const setupTables = async () => {
   try {

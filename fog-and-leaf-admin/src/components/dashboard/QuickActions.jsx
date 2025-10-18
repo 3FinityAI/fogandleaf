@@ -1,73 +1,43 @@
 import { useNavigate } from "react-router-dom";
-import {
-  Eye,
-  Package,
-  Users,
-  BarChart3,
-  ShoppingBag,
-  Plus,
-  Archive,
-  Truck,
-} from "lucide-react";
+import { Eye, Package, ShoppingBag, Plus, BarChart3 } from "lucide-react";
 
 const QuickActions = () => {
   const navigate = useNavigate();
 
   const quickActions = [
     {
-      icon: Eye,
-      label: "View All Orders",
-      description: "Manage customer orders",
-      path: "/orders",
+      icon: BarChart3,
+      label: "Dashboard Overview",
+      description: "View analytics & metrics",
+      path: "/dashboard",
       color: "text-blue-600 bg-blue-50 hover:bg-blue-100",
     },
     {
-      icon: Plus,
-      label: "Add New Product",
-      description: "Create product listing",
+      icon: Package,
+      label: "Manage Products",
+      description: "View & manage product catalog",
       path: "/products",
       color: "text-green-600 bg-green-50 hover:bg-green-100",
     },
     {
-      icon: Package,
-      label: "Manage Stock",
-      description: "Adjust inventory levels",
-      path: "/inventory",
+      icon: Plus,
+      label: "Add New Product",
+      description: "Create new product listing",
+      path: "/products",
       color: "text-purple-600 bg-purple-50 hover:bg-purple-100",
     },
     {
-      icon: ShoppingBag,
-      label: "Confirmed Orders",
-      description: "Orders awaiting processing",
-      path: "/orders?status=confirmed",
+      icon: Eye,
+      label: "View All Orders",
+      description: "Manage customer orders",
+      path: "/orders",
       color: "text-orange-600 bg-orange-50 hover:bg-orange-100",
     },
     {
-      icon: Truck,
-      label: "Shipping Management",
-      description: "Track shipments",
-      path: "/shipping",
-      color: "text-indigo-600 bg-indigo-50 hover:bg-indigo-100",
-    },
-    {
-      icon: Users,
-      label: "Customer Management",
-      description: "Manage user accounts",
-      path: "/users",
-      color: "text-teal-600 bg-teal-50 hover:bg-teal-100",
-    },
-    {
-      icon: BarChart3,
-      label: "Sales Reports",
-      description: "Analytics & insights",
-      path: "/reports",
-      color: "text-rose-600 bg-rose-50 hover:bg-rose-100",
-    },
-    {
-      icon: Archive,
-      label: "Low Stock Alerts",
-      description: "Products running low",
-      path: "/inventory?filter=low-stock",
+      icon: ShoppingBag,
+      label: "Pending Orders",
+      description: "Orders awaiting processing",
+      path: "/orders?status=pending",
       color: "text-red-600 bg-red-50 hover:bg-red-100",
     },
   ];

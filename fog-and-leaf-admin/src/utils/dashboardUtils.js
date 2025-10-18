@@ -77,7 +77,7 @@ export const generateAlerts = (stats) => {
     alerts.push({
       type: "warning",
       message: `${stats.lowStockProducts} products have low stock`,
-      action: "Manage Inventory",
+      action: "Manage Products",
       link: "/products",
     });
   }
@@ -86,7 +86,7 @@ export const generateAlerts = (stats) => {
     alerts.push({
       type: "error",
       message: `${stats.outOfStockProducts} products are out of stock`,
-      action: "Restock Now",
+      action: "Update Stock",
       link: "/products",
     });
   }
@@ -126,8 +126,6 @@ export const getTrendInfo = (current, previous) => {
 export const getQuickActions = () => [
   { icon: "Eye", label: "View All Orders", link: "/orders" },
   { icon: "Package", label: "Manage Products", link: "/products" },
-  { icon: "Users", label: "Customer Reports", link: "/reports" },
-  { icon: "BarChart3", label: "Analytics", link: "/reports" },
 ];
 
 /**

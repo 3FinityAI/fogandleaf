@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import Layout from "../components/Layout";
 import {
@@ -19,8 +19,6 @@ import ProductActions from "../components/products/ProductActions";
 import ProductManagementModal from "../components/products/ProductManagementModal";
 
 const ProductsPage = () => {
-  console.log("🎯 ProductsPage component rendering...");
-
   // State management
   const [allProducts, setAllProducts] = useState([]); // Store all products
   const [filteredProducts, setFilteredProducts] = useState([]); // Store filtered results
@@ -74,12 +72,14 @@ const ProductsPage = () => {
     return stats;
   }, []);
 
-  // Get current product stats
-  const productStats = calculateProductStats(allProducts);
+  // Get current product stats with memoization
+  const productStats = useMemo(
+    () => calculateProductStats(allProducts),
+    [allProducts, calculateProductStats]
+  );
 
   // Clear all filters
   const clearFilters = () => {
-    console.log("🧹 Clearing all filters");
     setFilters({
       search: "",
       status: "",
@@ -179,8 +179,6 @@ const ProductsPage = () => {
 
   // Update filtered and paginated products when filters or page changes
   const updateDisplayedProducts = useCallback(() => {
-    console.log("📊 Updating displayed products with filters:", filters);
-
     // Apply filters
     const filtered = applyFilters(allProducts, filters);
     setFilteredProducts(filtered);
@@ -193,10 +191,6 @@ const ProductsPage = () => {
     );
     setDisplayedProducts(paginated.products);
     setPagination(paginated.pagination);
-
-    console.log(
-      `📦 Filtered ${filtered.length} products from ${allProducts.length} total`
-    );
   }, [
     allProducts,
     filters,
@@ -211,19 +205,13 @@ const ProductsPage = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("📡 Fetching all products from server...");
 
       // Fetch all products using the existing /products endpoint with large limit
       // Remove isActive filter to get both active and inactive products for admin view
       const response = await axiosInstance.get("/products?limit=1000&page=1");
-      console.log("📦 Products API response:", response.data);
 
       if (response.data && response.data.success) {
         const fetchedProducts = response.data.data;
-        console.log(
-          `✅ Fetched ${fetchedProducts?.length || 0} total products`
-        );
-
         setAllProducts(fetchedProducts || []);
       } else {
         throw new Error(response.data?.message || "Failed to fetch products");
@@ -244,12 +232,10 @@ const ProductsPage = () => {
   // Fetch available categories
   const fetchCategories = useCallback(async () => {
     try {
-      console.log("📡 Fetching categories...");
       const response = await axiosInstance.get("/products/categories");
 
       if (response.data && response.data.success) {
         setCategories(response.data.data || []);
-        console.log("✅ Fetched categories:", response.data.data);
       }
     } catch (err) {
       console.error("❌ Fetch categories error:", err);
@@ -259,9 +245,6 @@ const ProductsPage = () => {
 
   // Fetch products and categories on component mount
   useEffect(() => {
-    console.log(
-      "🚀 ProductsPage mounted - calling fetchAllProducts and fetchCategories"
-    );
     fetchAllProducts();
     fetchCategories();
   }, [fetchAllProducts, fetchCategories]);
@@ -275,7 +258,6 @@ const ProductsPage = () => {
 
   // Handle page change
   const handlePageChange = (newPage) => {
-    console.log("📄 Changing to page:", newPage);
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination((prev) => ({ ...prev, currentPage: newPage }));
     }
@@ -283,7 +265,6 @@ const ProductsPage = () => {
 
   // Handle filters change
   const handleFiltersChange = (newFilters) => {
-    console.log("🎛️ Filters changed:", newFilters);
     setFilters(newFilters);
     // Reset to first page when filters change
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
@@ -291,7 +272,6 @@ const ProductsPage = () => {
 
   // Handle refresh
   const handleRefresh = () => {
-    console.log("🔄 Refreshing products");
     fetchAllProducts();
     fetchCategories();
   };
@@ -321,10 +301,15 @@ const ProductsPage = () => {
     handleRefresh();
   };
 
+  const handleDeleteProduct = (product) => {
+    console.log("Delete button clicked for product:", product.name);
+    setSelectedProduct(product);
+    setModalMode("delete");
+    setShowManagementModal(true);
+  };
+
   // Handle export (Enhanced version with multiple formats)
   const handleExport = (format = "csv") => {
-    console.log("📊 Exporting products as", format);
-
     try {
       // Use filtered products for export (respects current filters)
       const productsToExport =
@@ -541,20 +526,20 @@ const ProductsPage = () => {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
             Products Management
           </h1>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors"
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors text-sm"
             >
               <RefreshCw
                 className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
               />
-              Refresh
+              <span>Refresh</span>
             </button>
 
             {/* Export Dropdown */}
@@ -562,10 +547,10 @@ const ProductsPage = () => {
               <button
                 onClick={() => setShowExportDropdown(!showExportDropdown)}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors text-sm"
               >
                 <Download className="h-4 w-4" />
-                Export
+                <span>Export</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
 
@@ -694,6 +679,7 @@ const ProductsPage = () => {
           totalPages={pagination.totalPages}
           onPageChange={handlePageChange}
           onEdit={handleEditProduct}
+          onDelete={handleDeleteProduct}
         />
 
         {/* Product Management Modal */}

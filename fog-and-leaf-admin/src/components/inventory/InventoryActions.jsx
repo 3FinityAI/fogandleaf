@@ -66,8 +66,7 @@ const InventoryActions = ({ selectedItems, onExport, onStockMovement }) => {
 
       {selectedItems.length === 0 && (
         <p className="text-gray-500 text-sm mt-4">
-          Manage stock levels and view inventory reports using the actions
-          above.
+          Manage stock levels and update inventory using the actions above.
         </p>
       )}
     </div>

@@ -5,15 +5,13 @@ import {
   LayoutDashboard,
   ShoppingBag,
   Package,
-  BarChart3,
   LogOut,
   Menu,
   X,
   Leaf,
-  Users,
 } from "lucide-react";
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
   const { logout, user } = useAuth();
@@ -27,12 +25,11 @@ const Sidebar = () => {
     { path: "/", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/orders", icon: ShoppingBag, label: "Orders" },
     { path: "/products", icon: Package, label: "Products" },
-    { path: "/reports", icon: BarChart3, label: "Reports" },
   ];
 
   return (
     <div
-      className={`bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ${
+      className={`bg-white border-r border-gray-200 flex flex-col h-full transition-all duration-300 ${
         isCollapsed ? "w-16" : "w-64"
       }`}
     >
@@ -50,11 +47,30 @@ const Sidebar = () => {
               </div>
             </div>
           )}
+
+          {/* Desktop collapse button / Mobile close button */}
           <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={() => {
+              if (window.innerWidth < 1024 && onClose) {
+                // On mobile, close the sidebar
+                onClose();
+              } else {
+                // On desktop, toggle collapse
+                setIsCollapsed(!isCollapsed);
+              }
+            }}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title={
+              window.innerWidth < 1024
+                ? "Close sidebar"
+                : isCollapsed
+                ? "Expand sidebar"
+                : "Collapse sidebar"
+            }
           >
-            {isCollapsed ? (
+            {window.innerWidth < 1024 ? (
+              <X className="w-5 h-5 text-gray-600" />
+            ) : isCollapsed ? (
               <Menu className="w-5 h-5 text-gray-600" />
             ) : (
               <X className="w-5 h-5 text-gray-600" />
@@ -69,8 +85,14 @@ const Sidebar = () => {
           <NavLink
             key={path}
             to={path}
+            onClick={() => {
+              // Close sidebar on mobile when navigation item is clicked
+              if (window.innerWidth < 1024 && onClose) {
+                onClose();
+              }
+            }}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all duration-200 ${
+              `flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
                 isActive
                   ? "bg-green-50 text-green-700 border-r-2 border-green-600"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -108,7 +130,7 @@ const Sidebar = () => {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg font-medium transition-all duration-200 ${
+          className={`w-full flex items-center gap-3 px-3 py-3 lg:py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg font-medium transition-all duration-200 touch-manipulation ${
             isCollapsed ? "justify-center" : ""
           }`}
         >

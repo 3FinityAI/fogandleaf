@@ -1,26 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { X, Package, Save, Edit3, Eye, Trash2, Loader2 } from "lucide-react";
 import {
-  X,
-  Package,
-  Save,
-  Edit3,
-  Eye,
-  Trash2,
-  Upload,
-  Image as ImageIcon,
-  Loader2,
-} from "lucide-react";
-import axiosInstance from "../../utils/axiosInstance";
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  formatProductData,
+} from "../../services/ProductService";
+import { uploadImages } from "../../services/ImageService";
+import ImageUpload from "./ImageUpload";
 
 const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
   const [formData, setFormData] = useState({
-    // Required fields
     name: "",
     category: "",
     price: "",
     stockQuantity: "",
-
-    // Optional fields
     description: "",
     longDescription: "",
     originalPrice: "",
@@ -30,29 +24,21 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
     tags: [],
     brewingInstructions: "",
     origin: "",
-
-    // Boolean fields
     isActive: true,
     inStock: true,
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
-  // Image upload states
-  const [imageFiles, setImageFiles] = useState([]);
-  const [uploadingImages, setUploadingImages] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const fileInputRef = useRef(null);
-
-  // Categories from the schema
   const categories = [
-    { value: "blacktea", label: "Black Tea" },
-    { value: "blendedtea", label: "Blended Tea" },
-    { value: "greentea", label: "Green Tea" },
-    { value: "herbal", label: "Herbal Tea" },
-    { value: "oolong", label: "Oolong Tea" },
-    { value: "whitetea", label: "White Tea" },
+    { value: "Black Tea", label: "Black Tea" },
+    { value: "Blended Tea", label: "Blended Tea" },
+    { value: "Green Tea", label: "Green Tea" },
+    { value: "Herbal Tea", label: "Herbal Tea" },
+    { value: "Oolong Tea", label: "Oolong Tea" },
+    { value: "White Tea", label: "White Tea" },
   ];
 
   useEffect(() => {
@@ -78,8 +64,8 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
         isActive: product.isActive !== undefined ? product.isActive : true,
         inStock: product.inStock !== undefined ? product.inStock : true,
       });
+      setSelectedFiles([]);
     } else if (mode === "create") {
-      // Reset form for new product
       setFormData({
         name: "",
         category: "",
@@ -97,11 +83,9 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
         isActive: true,
         inStock: true,
       });
+      setSelectedFiles([]);
     }
     setError("");
-    setImageFiles([]);
-    setUploadingImages(false);
-    setDragActive(false);
   }, [product, mode]);
 
   const handleInputChange = (e) => {
@@ -123,98 +107,6 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
     }));
   };
 
-  // Image upload handlers
-  const handleImageSelect = (files) => {
-    const validFiles = Array.from(files).filter((file) => {
-      if (!file.type.startsWith("image/")) {
-        setError("Please select only image files");
-        return false;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        setError("Image size should be less than 5MB");
-        return false;
-      }
-      return true;
-    });
-
-    if (validFiles.length > 0) {
-      setImageFiles((prev) => [...prev, ...validFiles]);
-      setError("");
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setDragActive(true);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setDragActive(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragActive(false);
-    const files = e.dataTransfer.files;
-    handleImageSelect(files);
-  };
-
-  const handleFileInputChange = (e) => {
-    const files = e.target.files;
-    handleImageSelect(files);
-  };
-
-  const removeImage = (index, isUploadedImage = false) => {
-    if (isUploadedImage) {
-      // Remove from existing imageUrl array
-      setFormData((prev) => ({
-        ...prev,
-        imageUrl: prev.imageUrl.filter((_, i) => i !== index),
-      }));
-    } else {
-      // Remove from new files to upload
-      setImageFiles((prev) => prev.filter((_, i) => i !== index));
-    }
-  };
-
-  const uploadImages = async () => {
-    if (imageFiles.length === 0) return [];
-
-    setUploadingImages(true);
-    const uploadedUrls = [];
-
-    try {
-      for (const file of imageFiles) {
-        const formData = new FormData();
-        formData.append("image", file);
-
-        // TODO: Replace with actual Cloudinary upload endpoint
-        const response = await axiosInstance.post("/upload/image", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        if (response.data.success) {
-          uploadedUrls.push(response.data.imageUrl);
-        }
-      }
-
-      // Clear the image files after successful upload
-      setImageFiles([]);
-
-      return uploadedUrls;
-    } catch (err) {
-      console.error("Image upload error:", err);
-      setError("Failed to upload images. Please try again.");
-      return [];
-    } finally {
-      setUploadingImages(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (mode === "view") return;
@@ -223,52 +115,79 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
     setError("");
 
     try {
-      // Upload new images first if any
-      const newImageUrls = await uploadImages();
+      // Upload selected files first (if any)
+      let newlyUploadedUrls = [];
+      if (selectedFiles.length > 0) {
+        newlyUploadedUrls = await uploadImages(selectedFiles);
+      }
 
       // Combine existing images with newly uploaded ones
-      const allImageUrls = [...formData.imageUrl, ...newImageUrls];
+      const finalImageUrls = [...formData.imageUrl, ...newlyUploadedUrls];
 
-      // Prepare data for API
-      const apiData = {
+      // Prepare data for API with all image URLs
+      const apiData = formatProductData({
         ...formData,
-        imageUrl: allImageUrls,
-        price: parseFloat(formData.price) || 0,
-        originalPrice: formData.originalPrice
-          ? parseFloat(formData.originalPrice)
-          : null,
-        weight: parseFloat(formData.weight) || 100,
-        stockQuantity: parseInt(formData.stockQuantity) || 0,
-      };
+        imageUrl: finalImageUrls,
+      });
 
       let response;
       if (mode === "create") {
-        response = await axiosInstance.post("/products", apiData);
+        response = await createProduct(apiData);
       } else if (mode === "edit") {
-        response = await axiosInstance.put(`/products/${product.id}`, apiData);
+        response = await updateProduct(product.id, apiData);
       } else if (mode === "delete") {
-        response = await axiosInstance.delete(`/products/${product.id}`);
+        // Use permanent delete for admin panel
+        response = await deleteProduct(product.id, true);
       }
 
-      if (response.data.success) {
-        onSave();
+      if (response.success) {
+        setError("");
+
+        setTimeout(() => {
+          onSave();
+        }, 500);
       } else {
-        throw new Error(response.data.message || "Operation failed");
+        throw new Error(response.message || "Operation failed");
       }
     } catch (err) {
       console.error("Product operation error:", err);
-      setError(
-        err.response?.data?.message || err.message || "Operation failed"
-      );
+
+      let errorMessage = "Operation failed";
+
+      if (
+        err.message.includes("already exists") ||
+        err.message.includes("duplicate")
+      ) {
+        errorMessage =
+          "This product already exists. Please check for duplicates or modify the product details.";
+      } else if (
+        err.message.includes("Server error") ||
+        err.message.includes("try again later")
+      ) {
+        errorMessage =
+          "Server error occurred. Please try again in a few moments.";
+      } else if (err.message.includes("Invalid product data")) {
+        errorMessage = "Please check all required fields and try again.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
+
+      setTimeout(() => {
+        setError("");
+      }, 10000);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async () => {
+    console.log("Delete confirmation for product:", product?.name);
     if (!window.confirm("Are you sure you want to delete this product?")) {
       return;
     }
+    console.log("Proceeding with delete operation...");
     await handleSubmit({ preventDefault: () => {} });
   };
 
@@ -279,9 +198,9 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
             {mode === "view" && <Eye className="h-6 w-6 text-blue-600" />}
             {mode === "edit" && <Edit3 className="h-6 w-6 text-orange-600" />}
@@ -456,126 +375,17 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
                   Product Images
                 </h3>
 
-                {/* Existing Images */}
-                {formData.imageUrl.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Current Images
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {formData.imageUrl.map((url, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={url}
-                            alt={`Product image ${index + 1}`}
-                            className="w-full h-24 object-cover rounded-lg border border-gray-200"
-                            onError={(e) => {
-                              e.target.src = "/api/placeholder/100/96";
-                            }}
-                          />
-                          {!isReadOnly && !isDeleting && (
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index, true)}
-                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                              title="Remove image"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Image Upload Area */}
-                {!isReadOnly && !isDeleting && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Add Images
-                    </label>
-
-                    {/* Compact Drag & Drop Area */}
-                    <div
-                      className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-                        dragActive
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-300 hover:border-gray-400"
-                      }`}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                    >
-                      <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="text-blue-600 hover:text-blue-500 font-medium text-sm"
-                      >
-                        Choose files
-                      </button>
-                      <p className="text-xs text-gray-500 mt-1">
-                        or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        PNG, JPG up to 5MB
-                      </p>
-
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleFileInputChange}
-                        className="hidden"
-                      />
-                    </div>
-
-                    {/* Preview New Images */}
-                    {imageFiles.length > 0 && (
-                      <div className="mt-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          New Images ({imageFiles.length})
-                        </label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {imageFiles.map((file, index) => (
-                            <div key={index} className="relative group">
-                              <img
-                                src={URL.createObjectURL(file)}
-                                alt={`New image ${index + 1}`}
-                                className="w-full h-24 object-cover rounded-lg border border-gray-200"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => removeImage(index, false)}
-                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                title="Remove image"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                              <div className="absolute bottom-1 left-1 bg-black bg-opacity-70 text-white text-xs px-1 py-0.5 rounded">
-                                {(file.size / 1024 / 1024).toFixed(1)}MB
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Upload Progress */}
-                    {uploadingImages && (
-                      <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                        <div className="flex items-center space-x-2">
-                          <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                          <span className="text-blue-700 text-sm">
-                            Uploading...
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <ImageUpload
+                  existingImages={formData.imageUrl}
+                  onImagesChange={(newImages) =>
+                    setFormData((prev) => ({ ...prev, imageUrl: newImages }))
+                  }
+                  selectedFiles={selectedFiles}
+                  onFilesChange={setSelectedFiles}
+                  disabled={isReadOnly || isDeleting}
+                  maxImages={10}
+                  showPreview={true}
+                />
               </div>
             </div>
 
@@ -726,7 +536,7 @@ const ProductManagementModal = ({ product, mode, onClose, onSave, isOpen }) => {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    {uploadingImages ? "Uploading images..." : "Processing..."}
+                    Processing...
                   </>
                 ) : (
                   <>

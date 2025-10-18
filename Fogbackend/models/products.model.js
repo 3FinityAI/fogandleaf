@@ -31,7 +31,22 @@ const Product = sequelize.define(
     category: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: "Product category like 'Black Tea', 'Green Tea', etc.",
+      comment: "Product category",
+      validate: {
+        isIn: {
+          args: [
+            [
+              "Black Tea",
+              "Blended Tea",
+              "Green Tea",
+              "Herbal Tea",
+              "Oolong Tea",
+              "White Tea",
+            ],
+          ],
+          msg: "Category must be one of: Black Tea, Blended Tea, Green Tea, Herbal Tea, Oolong Tea, White Tea",
+        },
+      },
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),
@@ -46,10 +61,13 @@ const Product = sequelize.define(
       comment: "Original price before discount",
     },
     weight: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(8, 2),
       allowNull: false,
-      comment: "Weight like '100g', '250g', etc.",
-      defaultValue: "100",
+      comment: "Weight in grams (e.g., 100.00)",
+      defaultValue: 100,
+      validate: {
+        min: { args: [0], msg: "Weight must be positive" },
+      },
     },
     stockQuantity: {
       type: DataTypes.INTEGER,

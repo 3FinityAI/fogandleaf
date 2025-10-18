@@ -18,21 +18,23 @@ const OrdersHeader = ({
   const exportCount = filteredCount > 0 ? filteredCount : totalCount;
 
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Orders Management</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+          Orders Management
+        </h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-1">
           Manage customer orders, update status and track payments
         </p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <button
           onClick={onRefresh}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
+          className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors text-sm"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          Refresh
+          <span>Refresh</span>
         </button>
 
         {/* Export Dropdown */}
@@ -40,10 +42,10 @@ const OrdersHeader = ({
           <button
             onClick={() => setShowExportDropdown(!showExportDropdown)}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors text-sm"
           >
             <Download className="w-4 h-4" />
-            Export
+            <span>Export</span>
             <ChevronDown className="w-4 h-4" />
           </button>
 

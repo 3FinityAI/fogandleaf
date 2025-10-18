@@ -32,7 +32,46 @@ const RecentOrdersTable = ({ orders = [] }) => {
         </a>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-3">
+        {orders.slice(0, 3).map((order) => (
+          <div
+            key={order.id}
+            className="border border-gray-200 rounded-lg p-3 bg-gray-50"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <p className="font-medium text-secondary-900">
+                  {order.orderNumber || `#${order.id}`}
+                </p>
+                <p className="text-sm text-secondary-600">
+                  {order.shippingFirstName && order.shippingLastName
+                    ? `${order.shippingFirstName} ${order.shippingLastName}`
+                    : order.contactEmail || order.customer_email || "Customer"}
+                </p>
+              </div>
+              <span
+                className={`px-2 py-1 text-xs font-medium rounded-full ${getOrderStatusStyle(
+                  order.status
+                )}`}
+              >
+                {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-secondary-600">
+                {formatDate(order.createdAt)}
+              </span>
+              <span className="font-semibold text-secondary-900">
+                {formatCurrency(order.totalAmount)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-secondary-200">

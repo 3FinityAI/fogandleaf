@@ -12,7 +12,6 @@ import DashboardPage from "./pages/DashboardPage";
 import OrdersPage from "./pages/OrdersPage";
 import ProductsPage from "./pages/ProductsPage";
 import InventoryPage from "./pages/InventoryPage";
-import ReportsPage from "./pages/ReportsPage";
 
 function App() {
   return (
@@ -50,14 +49,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <InventoryPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reports"
-              element={
-                <ProtectedRoute>
-                  <ReportsPage />
                 </ProtectedRoute>
               }
             />

@@ -15,7 +15,7 @@ import inventoryRoutes from "./routes/inventory.routes.js";
 import logger from "./middleware/logger.js";
 import adminRoutes from "./routes/admin.route.js";
 import shippingRoutes from "./routes/shipping.routes.js";
-import reportsRoutes from "./routes/reports.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
 
 // Load env vars
 dotenv.config();
@@ -55,7 +55,7 @@ app.use("/api/email", emailRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/shipments", shippingRoutes);
-app.use("/api/admin/reports", reportsRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

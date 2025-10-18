@@ -15,41 +15,51 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 
+const heroImages = [
+  {
+    url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758267005/tea_garden_vph6an.jpg",
+    alt: "Misty tea plantation in Darjeeling hills",
+    theme: "green",
+    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+  },
+  {
+    url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758265791/closeupshot_xfchtc.jpg",
+    alt: "Premium tea leaves macro photography",
+    theme: "natural",
+    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+  },
+  {
+    url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758266518/tea_pouring_dvvjx1.jpg",
+    alt: "Traditional tea pouring ceremony",
+    theme: "warm",
+    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+  },
+  {
+    url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758263752/tea11_i0qe9n.jpg",
+    alt: "Golden hour tea cup in natural garden setting",
+    theme: "golden",
+    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+  },
+];
+
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Tea background images - 4 carefully selected images for hero carousel
-  const heroImages = [
-    {
-      url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758267005/tea_garden_vph6an.jpg",
-      alt: "Misty tea plantation in Darjeeling hills",
-      theme: "green",
-    },
-    {
-      url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758265791/closeupshot_xfchtc.jpg",
-      alt: "Premium tea leaves macro photography",
-      theme: "natural",
-    },
-    {
-      url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758266518/tea_pouring_dvvjx1.jpg",
-      alt: "Traditional tea pouring ceremony",
-      theme: "warm",
-    },
-    {
-      url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758263752/tea11_i0qe9n.jpg",
-      alt: "Golden hour tea cup in natural garden setting",
-      theme: "golden",
-    },
-  ];
-
+  // Preload images on mount for instant switching
   useEffect(() => {
     setIsVisible(true);
+    heroImages.forEach((img) => {
+      const image = new window.Image();
+      image.src = img.url;
+    });
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, 5000); // 5 seconds per image for smoother flow
+      setImageLoaded(false); // Blur effect on image change
+    }, 5000);
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, []);
 
   const scrollToNextSection = () => {
     window.scrollTo({
@@ -58,66 +68,72 @@ const HeroSection = () => {
     });
   };
 
+  const currentImage = heroImages[currentImageIndex];
+
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
-      {/* Background Images with Enhanced Quality and Smooth Transitions */}
+      {/* Background Images with Blur Placeholder */}
       <div className="absolute inset-0">
-        {heroImages.map((image, index) => (
-          <motion.div
-            key={index}
-            className={`absolute inset-0 ${
-              index === currentImageIndex ? "opacity-100" : "opacity-0"
-            }`}
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{
-              opacity: index === currentImageIndex ? 1 : 0,
-              scale: index === currentImageIndex ? 1.06 : 1.02,
-            }}
-            transition={{
-              opacity: { duration: 1.5, ease: "easeInOut" },
-              scale: { duration: 6, ease: "easeOut" },
-            }}
-          >
+        <motion.div
+          className="absolute inset-0"
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={{
+            opacity: 1,
+            scale: 1.06,
+          }}
+          transition={{
+            opacity: { duration: 1.2, ease: "easeInOut" },
+            scale: { duration: 6, ease: "easeOut" },
+          }}
+        >
+          {/* Blurred LQIP placeholder */}
+          {!imageLoaded && (
             <img
-              src={image.url}
-              alt={image.alt}
-              className="h-full w-full object-cover"
-              style={{
-                filter:
-                  "brightness(0.88) contrast(1.15) saturate(1.2) blur(0px)",
-                imageRendering: "high-quality",
-              }}
-              loading="eager"
+              src={currentImage.lqip || ""}
+              alt=""
+              className="h-full w-full object-cover blur-2xl scale-105 transition-opacity duration-300 opacity-60 absolute inset-0"
+              aria-hidden="true"
+              draggable={false}
             />
-            {/* Enhanced overlay with better opacity control */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-1500 ${
-                image.theme === "golden"
-                  ? "bg-gradient-to-br from-amber-900/45 via-orange-800/25 to-yellow-900/35"
-                  : image.theme === "green"
-                  ? "bg-gradient-to-br from-green-900/45 via-emerald-800/25 to-teal-900/35"
-                  : image.theme === "natural"
-                  ? "bg-gradient-to-br from-green-900/55 via-brown-800/35 to-amber-900/45"
-                  : "bg-gradient-to-br from-orange-900/45 via-red-800/25 to-amber-900/35"
-              } ${index === currentImageIndex ? "opacity-100" : "opacity-80"}`}
-            />
-          </motion.div>
-        ))}
-
-        {/* Enhanced Gradient Overlay */}
+          )}
+          {/* Main High-Quality Hero Image */}
+          <img
+            src={currentImage.url}
+            alt={currentImage.alt}
+            className={`h-full w-full object-cover transition-opacity duration-700 ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => setImageLoaded(true)}
+            loading="eager"
+            style={{
+              filter: "brightness(0.88) contrast(1.15) saturate(1.2)",
+              imageRendering: "high-quality",
+            }}
+            draggable={false}
+          />
+          {/* Thematic overlays */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-1500 ${
+              currentImage.theme === "golden"
+                ? "bg-gradient-to-br from-amber-900/45 via-orange-800/25 to-yellow-900/35"
+                : currentImage.theme === "green"
+                ? "bg-gradient-to-br from-green-900/45 via-emerald-800/25 to-teal-900/35"
+                : currentImage.theme === "natural"
+                ? "bg-gradient-to-br from-green-900/55 via-brown-800/35 to-amber-900/45"
+                : "bg-gradient-to-br from-orange-900/45 via-red-800/25 to-amber-900/35"
+            }`}
+          />
+        </motion.div>
+        {/* Gradients */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/15 via-transparent to-black/15"></div>
       </div>
 
-      {/* Simple Floating Elements */}
+      {/* Floating Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           className="absolute top-20 left-20 w-32 h-32 bg-green-400/10 rounded-full blur-xl"
-          animate={{
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-            scale: [1, 1.1, 1],
-          }}
+          animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.1, 1] }}
           transition={{
             duration: 8,
             repeat: Infinity,
@@ -126,11 +142,7 @@ const HeroSection = () => {
         />
         <motion.div
           className="absolute bottom-20 right-20 w-48 h-48 bg-amber-400/10 rounded-full blur-xl"
-          animate={{
-            x: [0, -40, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.2, 1],
-          }}
+          animate={{ x: [0, -40, 0], y: [0, 30, 0], scale: [1, 1.2, 1] }}
           transition={{
             duration: 10,
             repeat: Infinity,
@@ -139,10 +151,9 @@ const HeroSection = () => {
         />
       </div>
 
-      {/* Main Content */}
+      {/* Main Text & Buttons appear instantly */}
       <div className="relative z-20 flex items-center justify-center min-h-screen">
         <div className="container mx-auto px-6 text-center">
-          {/* Premium Badge */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
@@ -154,8 +165,6 @@ const HeroSection = () => {
               Premium Tea Collection Since 1985
             </Badge>
           </motion.div>
-
-          {/* Main Title */}
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
@@ -171,8 +180,6 @@ const HeroSection = () => {
               In Every Sip
             </span>
           </motion.h1>
-
-          {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
@@ -183,8 +190,7 @@ const HeroSection = () => {
             experience the heritage, purity, and artistry of handpicked premium
             teas.
           </motion.p>
-
-          {/* Action Buttons */}
+          {/* Actions */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
@@ -201,7 +207,6 @@ const HeroSection = () => {
                 <ArrowRight className="ml-3 h-5 w-5" />
               </Button>
             </Link>
-
             <Link to="/about">
               <Button
                 variant="outline"
@@ -213,8 +218,7 @@ const HeroSection = () => {
               </Button>
             </Link>
           </motion.div>
-
-          {/* Feature Highlights */}
+          {/* Features */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
@@ -274,13 +278,16 @@ const HeroSection = () => {
         </motion.div>
       </motion.div>
 
-      {/* Enhanced Image Navigation Dots */}
+      {/* Navigation Dots and Current Image Info */}
       <div className="absolute bottom-8 right-8 flex flex-col space-y-3">
         <div className="flex space-x-2">
           {heroImages.map((image, index) => (
             <button
               key={index}
-              onClick={() => setCurrentImageIndex(index)}
+              onClick={() => {
+                setCurrentImageIndex(index);
+                setImageLoaded(false);
+              }}
               className={`group relative transition-all duration-300 ${
                 index === currentImageIndex
                   ? "w-4 h-4"
@@ -295,7 +302,6 @@ const HeroSection = () => {
                     : "bg-white/50 hover:bg-white/70 hover:scale-110"
                 }`}
               />
-              {/* Enhanced Progress ring for current image */}
               {index === currentImageIndex && (
                 <div className="absolute inset-0 rounded-full border-2 border-white/30">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -318,14 +324,12 @@ const HeroSection = () => {
             </button>
           ))}
         </div>
-
-        {/* Current image info */}
         <div className="text-right">
           <div className="text-white/70 text-xs font-medium">
             {currentImageIndex + 1} / {heroImages.length}
           </div>
           <div className="text-white/50 text-xs max-w-32 truncate">
-            {heroImages[currentImageIndex]?.alt}
+            {currentImage.alt}
           </div>
         </div>
       </div>
