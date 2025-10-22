@@ -143,7 +143,7 @@ const CheckoutPage = () => {
 
       // Send order to backend using axiosInstance (which handles cookies automatically)
       const response = await axiosInstance.post("/orders", orderPayload);
-      console.log("Order response:", response.data);
+      // console.log("Order response:", response.data);
 
       if (response.data.success) {
         // Store order info for confirmation page
@@ -158,11 +158,12 @@ const CheckoutPage = () => {
           orderDate: new Date().toISOString(),
         };
 
-        console.log("Storing order data:", orderData);
+        // console.log("Storing order data:", orderData);
         sessionStorage.setItem("lastOrder", JSON.stringify(orderData));
 
         clearCart();
-        console.log("Navigating to order confirmation page");
+        localStorage.removeItem("fog_leaf_products");
+        // console.log("Navigating to order confirmation page");
         navigate("/order-confirmation");
       } else {
         setErrors({
@@ -172,7 +173,7 @@ const CheckoutPage = () => {
         });
       }
     } catch (error) {
-      console.error("Order submission error:", error);
+      // console.error("Order submission error:", error);
       const errorMessage =
         error.response?.data?.message ||
         "Order processing failed. Please try again.";

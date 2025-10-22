@@ -32,8 +32,8 @@ export const CartProvider = ({ children }) => {
       image: item.productImage,
       imageUrl: item.productImage,
       quantity: item.quantity,
-      weight: parseWeightToNumber(item.productWeight), // Always store as number
-      weightOriginal: item.productWeight, // Keep original format for backend compatibility
+      weight: parseWeightToNumber(item.productWeight),
+      weightOriginal: item.productWeight,
       category: item.productCategory,
     }));
   }, []);
@@ -76,7 +76,7 @@ export const CartProvider = ({ children }) => {
         setCartItems(localCart);
       }
     } catch (error) {
-      console.error("Error loading cart:", error);
+      // console.error("Error loading cart:", error);
       setError("Failed to load cart");
       // Fallback to localStorage
       const localCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
@@ -150,7 +150,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("guestCart", JSON.stringify(updatedItems));
       }
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      // console.error("Error adding to cart:", error);
       setError("Failed to add item to cart");
       // Revert optimistic update on failure
       loadCart();
@@ -176,7 +176,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("guestCart", JSON.stringify(updatedItems));
       }
     } catch (error) {
-      console.error("Error removing from cart:", error);
+      // console.error("Error removing from cart:", error);
       setError("Failed to remove item from cart");
       // Revert optimistic update on failure
       loadCart();
@@ -228,7 +228,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("guestCart", JSON.stringify(updatedItems));
       }
     } catch (error) {
-      console.error("Error updating quantity:", error);
+      // console.error("Error updating quantity:", error);
       setError("Failed to update item quantity");
       // Revert optimistic update on failure
       loadCart();
@@ -251,7 +251,7 @@ export const CartProvider = ({ children }) => {
         localStorage.removeItem("guestCart");
       }
     } catch (error) {
-      console.error("Error clearing cart:", error);
+      // console.error("Error clearing cart:", error);
       setError("Failed to clear cart");
       // Revert optimistic update on failure
       loadCart();
@@ -285,7 +285,7 @@ export const CartProvider = ({ children }) => {
         await loadCart();
       }
     } catch (error) {
-      console.error("Error merging guest cart:", error);
+      // console.error("Error merging guest cart:", error);
       setError("Failed to merge guest cart");
     }
   };
@@ -339,4 +339,5 @@ export const CartProvider = ({ children }) => {
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
-export default CartContext;
+export { CartContext };
+export default CartProvider;

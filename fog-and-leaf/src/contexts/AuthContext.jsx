@@ -6,12 +6,13 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false); // Changed to false - non-blocking
+  const [isInitialAuthCheck, setIsInitialAuthCheck] = useState(true);
 
   // Check authentication on app load
   useEffect(() => {
     checkAuthStatus();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); 
 
   const checkAuthStatus = async (retryCount = 0) => {
     let shouldRetry = false;
@@ -21,27 +22,27 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         setUser(response.data.user);
         setIsAuthenticated(true);
-        console.log("Auto-login successful:", response.data.user);
+        // console.log("Auto-login successful:", response.data.user);
       } else {
         setIsAuthenticated(false);
         setUser(null);
       }
     } catch (error) {
-      console.log("Auth check failed:", error.message);
+      // console.log("Auth check failed:", error.message);
 
       // If access token is missing/expired but we have a refresh token, try to refresh
       if (error.response?.status === 401) {
-        console.log("Access token expired, attempting refresh...");
+        // console.log("Access token expired, attempting refresh...");
         try {
           const refreshResponse = await axiosInstance.post("/auth/refresh");
           if (refreshResponse.data.success) {
-            console.log("Token refreshed successfully, retrying auth check...");
+            // console.log("Token refreshed successfully, retrying auth check...");
             // Token refreshed, try auth check again
             setTimeout(() => checkAuthStatus(0), 100);
             return;
           }
         } catch (refreshError) {
-          console.log("Token refresh failed:", refreshError.message);
+          // console.log("Token refresh failed:", refreshError.message);
           // Refresh failed, user needs to log in again
           setIsAuthenticated(false);
           setUser(null);
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }) => {
           error.code === "ERR_CONNECTION_REFUSED") &&
         retryCount < 3
       ) {
-        console.log(`Retrying auth check... (attempt ${retryCount + 1})`);
+        // console.log(`Retrying auth check... (attempt ${retryCount + 1})`);
         shouldRetry = true;
         setTimeout(() => {
           checkAuthStatus(retryCount + 1);
@@ -66,6 +67,7 @@ export const AuthProvider = ({ children }) => {
       // Only set loading to false if we're not retrying
       if (!shouldRetry) {
         setAuthLoading(false);
+        setIsInitialAuthCheck(false);
       }
     }
   };
@@ -82,7 +84,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await axiosInstance.post("/auth/logout");
     } catch (error) {
-      console.error("Logout error:", error);
+      // console.error("Logout error:", error);
     } finally {
       setUser(null);
       setIsAuthenticated(false);
@@ -96,6 +98,7 @@ export const AuthProvider = ({ children }) => {
     user,
     isAuthenticated,
     authLoading,
+    isInitialAuthCheck,
     login,
     logout,
     checkAuthStatus,

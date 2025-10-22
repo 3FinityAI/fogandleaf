@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useIsMobile } from "../hooks/use-mobile";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,116 +15,25 @@ import {
   Minus,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import axiosInstance from "../utility/axiosInstance";
+import { useProducts } from "../hooks/useProducts";
+// import fallbackProducts from "@/data/productData";
+
+import { useEffect } from "react";
 
 const ProductsPage = () => {
-  const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState("name");
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [loadingProducts, setLoadingProducts] = useState({}); // Track loading state per product
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
+  const [viewMode, setViewMode] = useState("grid");
+  const isMobile = useIsMobile();
+  const [sortBy, setSortBy] = useState("name");
+  const { allProducts, loading, error } = useProducts();
+  const [loadingProducts, setLoadingProducts] = useState({});
   const { addToCart, updateQuantity, getCartItem } = useCart();
 
-  // Fetch products from API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get("/products");
-        setProducts(response.data.data || []);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-        setError("Failed to load products");
-        // Fallback to hardcoded products if API fails
-        setProducts(fallbackProducts);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Fallback products in case API fails
-  const fallbackProducts = [
-    {
-      id: 1,
-      name: "Assam Tea",
-      price: 299,
-      originalPrice: 349,
-      imageUrl: "/api/placeholder/400/400",
-      description:
-        "Rich, malty flavor with a robust character that awakens your senses",
-      longDescription:
-        "Our premium Assam tea is sourced from the finest gardens in the Brahmaputra valley. Known for its bold, malty flavor and bright copper color, this tea is perfect for morning consumption and pairs excellently with milk and sugar.",
-      category: "Black Tea",
-      origin: "Assam, India",
-      weight: "100g",
-      stockQuantity: 3,
-      rating: 4.5,
-      reviewCount: 127,
-      inStock: true,
-      isActive: true,
-      features: [
-        "Rich Malty Flavor",
-        "High Caffeine",
-        "Morning Tea",
-        "Milk Tea Friendly",
-      ],
-    },
-    {
-      id: 2,
-      name: "Assam Tea with Darjeeling Flavour",
-      price: 349,
-      originalPrice: 399,
-      imageUrl: "/api/placeholder/400/400",
-      description:
-        "Perfect blend of strength and delicate aroma for the discerning palate",
-      longDescription:
-        "A masterful blend combining the robust strength of Assam with the delicate muscatel flavor of Darjeeling. This unique combination offers the best of both worlds - the body of Assam and the refined taste of Darjeeling.",
-      category: "Blended Tea",
-      origin: "Assam & Darjeeling, India",
-      weight: "100g",
-      stockQuantity: 15,
-      rating: 4.8,
-      reviewCount: 89,
-      inStock: true,
-      isActive: true,
-      features: [
-        "Unique Blend",
-        "Balanced Flavor",
-        "Premium Quality",
-        "Limited Edition",
-      ],
-    },
-    {
-      id: 3,
-      name: "Darjeeling Orthodox",
-      price: 399,
-      originalPrice: 449,
-      imageUrl: "/api/placeholder/400/400",
-      description: "Muscatel flavor with floral notes, the champagne of teas",
-      longDescription:
-        "Our orthodox Darjeeling tea is carefully processed using traditional methods to preserve its distinctive muscatel flavor and delicate aroma. Grown in the high-altitude gardens of Darjeeling, this tea offers a complex flavor profile with floral notes.",
-      category: "Black Tea",
-      origin: "Darjeeling, India",
-      weight: "100g",
-      stockQuantity: 2,
-      rating: 4.3,
-      reviewCount: 203,
-      inStock: true,
-      isActive: true,
-      features: [
-        "Muscatel Flavor",
-        "Floral Notes",
-        "Orthodox Processing",
-        "High Altitude",
-      ],
-    },
-  ];
+  // Use products from hook
+  const products = allProducts;
 
   const handleAddToCart = async (product) => {
     setLoadingProducts((prev) => ({ ...prev, [product.id]: true }));
@@ -134,15 +44,14 @@ const ProductsPage = () => {
       const availableStock = product.stockQuantity || 0;
 
       if (currentCartQuantity + 1 > availableStock) {
-        alert(
-          `Cannot add to cart. Only ${availableStock} items available in stock. You already have ${currentCartQuantity} in cart.`
-        );
+        alert();
+        // Optionally, show a toast or alert for error
         return;
       }
 
       await addToCart(product, 1);
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      // console.error("Error adding to cart:", error);
       setError("Failed to add item to cart. Please try again.");
     } finally {
       setLoadingProducts((prev) => ({ ...prev, [product.id]: false }));
@@ -164,7 +73,7 @@ const ProductsPage = () => {
 
       await updateQuantity(product.id, newQuantity);
     } catch (error) {
-      console.error("Error updating quantity:", error);
+      // console.error("Error updating quantity:", error);
       setError("Failed to update quantity. Please try again.");
     } finally {
       setLoadingProducts((prev) => ({ ...prev, [product.id]: false }));
@@ -187,18 +96,29 @@ const ProductsPage = () => {
 
   return (
     <div
-      className="min-h-screen"
+      className={`min-h-screen ${isMobile ? "bg-white" : ""}`}
       style={{
-        background:
-          "linear-gradient(135deg, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 50%, rgba(209,209,209,1) 50%, rgba(254,254,254,1) 100%)",
-        backgroundAttachment: "fixed",
+        background: isMobile
+          ? "#fff"
+          : "linear-gradient(135deg, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 50%, rgba(209,209,209,1) 50%, rgba(254,254,254,1) 100%)",
+        backgroundAttachment: isMobile ? "scroll" : "fixed",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       }}
     >
       {/* Header */}
-      <section className="bg-gradient-to-r from-green-800 to-green-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        className={`bg-gradient-to-r from-green-800 to-green-900 text-white ${
+          isMobile ? "py-10" : "py-16"
+        }`}
+      >
+        <div
+          className={`${
+            isMobile
+              ? "max-w-full px-3"
+              : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+          }`}
+        >
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -217,10 +137,28 @@ const ProductsPage = () => {
       </section>
 
       {/* Filters and Controls */}
-      <section className="bg-white border-b border-gray-200 sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-4">
+      <section
+        className={`bg-white border-b border-gray-200 ${
+          isMobile ? "sticky top-0 z-40" : "sticky top-16 z-40"
+        }`}
+      >
+        <div
+          className={`${
+            isMobile
+              ? "max-w-full px-3 py-3"
+              : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+          }`}
+        >
+          <div
+            className={`flex flex-col ${
+              isMobile
+                ? "gap-3"
+                : "sm:flex-row justify-between items-center gap-4"
+            }`}
+          >
+            <div
+              className={`flex items-center ${isMobile ? "gap-2" : "gap-4"}`}
+            >
               <span className="text-gray-700 font-medium">
                 {products.length} Products
               </span>
@@ -257,12 +195,16 @@ const ProductsPage = () => {
               })()}
             </div>
 
-            <div className="flex items-center gap-4">
+            <div
+              className={`flex items-center ${isMobile ? "gap-2" : "gap-4"}`}
+            >
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`border border-gray-300 rounded-md ${
+                  isMobile ? "px-2 py-1 text-xs" : "px-3 py-2 text-sm"
+                } focus:outline-none focus:ring-2 focus:ring-green-500`}
               >
                 <option value="name">Sort by Name</option>
                 <option value="price-low">Price: Low to High</option>
@@ -271,7 +213,11 @@ const ProductsPage = () => {
               </select>
 
               {/* View Mode Toggle */}
-              <div className="flex border border-gray-300 rounded-md">
+              <div
+                className={`flex border border-gray-300 rounded-md ${
+                  isMobile ? "ml-2" : ""
+                }`}
+              >
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
@@ -295,8 +241,14 @@ const ProductsPage = () => {
       </section>
 
       {/* Products Grid */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className={`${isMobile ? "py-6" : "py-12"}`}>
+        <div
+          className={`${
+            isMobile
+              ? "max-w-full px-3"
+              : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+          }`}
+        >
           {loading ? (
             <div className="flex justify-center items-center py-12">
               <div className="text-center">
@@ -312,9 +264,11 @@ const ProductsPage = () => {
           ) : null}
 
           <div
-            className={`grid gap-6 ${
+            className={`grid gap-4 ${
               viewMode === "grid"
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr"
+                ? isMobile
+                  ? "grid-cols-1"
+                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr"
                 : "grid-cols-1"
             }`}
           >
@@ -328,7 +282,11 @@ const ProductsPage = () => {
                 <Card
                   className={`hover:shadow-xl transition-all duration-300 group bg-white rounded-xl border shadow-sm ${
                     viewMode === "list"
-                      ? "flex flex-row max-w-none h-48 gap-0 py-0"
+                      ? isMobile
+                        ? "flex flex-col max-w-full h-auto gap-0 py-0"
+                        : "flex flex-row max-w-none h-56 gap-0 py-0 items-stretch"
+                      : isMobile
+                      ? "flex flex-col max-w-full mx-auto h-full gap-0 py-0"
                       : "flex flex-col max-w-sm mx-auto h-full gap-0 py-0"
                   } ${
                     product.stockQuantity === 0
@@ -352,9 +310,13 @@ const ProductsPage = () => {
 
                   {/* Product Image */}
                   <div
-                    className={`bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative flex-shrink-0 overflow-hidden ${
+                    className={`bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative overflow-hidden ${
                       viewMode === "list"
-                        ? "w-52 h-48"
+                        ? isMobile
+                          ? "w-full h-48 flex-shrink-0"
+                          : "w-56 h-full flex-shrink-0"
+                        : isMobile
+                        ? "w-full h-48"
                         : "w-full h-64 sm:h-56 md:h-48 lg:h-56"
                     }`}
                   >
@@ -386,6 +348,7 @@ const ProductsPage = () => {
                                 e.target.style.display = "none";
                                 e.target.nextSibling.style.display = "flex";
                               }}
+                              loading="lazy"
                             />
                           ) : null}
 
@@ -451,14 +414,29 @@ const ProductsPage = () => {
                   <CardContent
                     className={`${
                       viewMode === "list"
-                        ? "flex-1 p-4 flex gap-4"
+                        ? isMobile
+                          ? "p-4 flex flex-col gap-2"
+                          : "flex-1 p-4 flex gap-4"
+                        : isMobile
+                        ? "p-4 flex flex-col flex-1 justify-between"
                         : "p-4 sm:p-6 flex flex-col flex-1 justify-between"
                     }`}
                   >
                     {viewMode === "list" ? (
-                      <>
-                        {/* Left Section - Product Details */}
-                        <div className="flex-1 space-y-1.5">
+                      <div
+                        className={`flex ${
+                          isMobile ? "flex-col gap-4" : "flex-row gap-0"
+                        } w-full`}
+                        style={{
+                          alignItems: isMobile ? "stretch" : "flex-start",
+                        }}
+                      >
+                        {/* Product Details Section */}
+                        <div
+                          className={`flex-1 min-w-0 flex flex-col justify-between ${
+                            isMobile ? "space-y-2" : "space-y-2 h-full py-2"
+                          }`}
+                        >
                           <div className="flex items-start justify-between">
                             <div className="space-y-1">
                               <Badge
@@ -467,24 +445,54 @@ const ProductsPage = () => {
                               >
                                 {product.category}
                               </Badge>
-                              <h3 className="font-bold text-gray-900 text-lg leading-tight">
+                              <h3
+                                className={`font-bold text-gray-900 ${
+                                  isMobile ? "text-base" : "text-lg"
+                                } leading-tight truncate`}
+                                title={product.name}
+                              >
                                 {product.name}
                               </h3>
                             </div>
                           </div>
-
-                          <p className="text-xs text-gray-500 font-medium">
-                            📍 {product.origin} • {product.weight}g
+                          <p
+                            className={`font-medium ${
+                              isMobile
+                                ? "text-xs text-gray-500"
+                                : "text-xs text-gray-500"
+                            }`}
+                          >
+                            <span className="mr-1">📍</span>
+                            {product.origin} • {product.weight}g
                           </p>
-
-                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                            {product.description}
+                          <p
+                            className={`text-gray-700 min-w-0 ${
+                              isMobile
+                                ? "text-sm leading-normal"
+                                : "text-sm leading-relaxed"
+                            }`}
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: isMobile ? "none" : 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {isMobile
+                              ? product.longDescription
+                              : product.description}
                           </p>
-
                           {/* Price & Rating Row */}
-                          <div className="flex items-center justify-between">
+                          <div
+                            className={`flex flex-wrap items-center gap-2 mt-2 justify-between`}
+                          >
                             <div className="flex items-center gap-2">
-                              <span className="text-xl font-bold text-green-600">
+                              <span
+                                className={`font-bold text-green-600 ${
+                                  isMobile ? "text-lg" : "text-xl"
+                                }`}
+                              >
                                 ₹{product.price}
                               </span>
                               {product.originalPrice > product.price && (
@@ -506,8 +514,7 @@ const ProductsPage = () => {
                                 </Badge>
                               )}
                             </div>
-
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 mt-2 md:mt-0">
                               <div className="flex items-center gap-0.5">
                                 {[...Array(5)].map((_, i) => (
                                   <Star
@@ -528,24 +535,26 @@ const ProductsPage = () => {
                               </span>
                             </div>
                           </div>
-
                           {/* Features & Stock Row */}
-                          <div className="flex items-center justify-between pb-1">
-                            <div className="flex gap-1.5">
+                          <div
+                            className={`flex flex-wrap items-center gap-2 pt-2 justify-between`}
+                          >
+                            <div className="flex gap-1.5 flex-wrap overflow-hidden">
                               {product.features &&
                                 product.features
-                                  .slice(0, 2)
+                                  .slice(0, isMobile ? 3 : 5)
                                   .map((feature, idx) => (
                                     <Badge
                                       key={idx}
                                       variant="outline"
-                                      className="border-green-200 text-green-700 text-xs px-2 py-1 font-medium"
+                                      className={`border-green-200 text-green-700 text-xs px-2 py-1 font-medium inline-block max-w-[10rem] truncate ${
+                                        isMobile ? "bg-green-50" : "bg-white"
+                                      }`}
                                     >
                                       {feature}
                                     </Badge>
                                   ))}
                             </div>
-
                             <div>
                               {product.stockQuantity === 0 ? (
                                 <span className="inline-flex items-center text-red-700 text-xs font-bold bg-red-50 px-2 py-1 rounded border border-red-200">
@@ -567,10 +576,10 @@ const ProductsPage = () => {
                             </div>
                           </div>
                         </div>
-
-                        {/* Right Section - Actions Only */}
-                        <div className="w-40 flex flex-col justify-center space-y-2.5 pl-4 border-l border-gray-200">
-                          {/* Actions Section */}
+                        {/* Actions Section - Responsive */}
+                        <div
+                          className={`flex flex-col md:w-48 w-full md:flex-shrink-0 justify-center space-y-3 md:pl-6 md:border-l md:border-gray-200 h-full mt-4 md:mt-0`}
+                        >
                           <div className="space-y-2.5">
                             {(() => {
                               const cartItem = getCartItem(product.id);
@@ -580,7 +589,6 @@ const ProductsPage = () => {
                                 : 0;
                               const wouldExceedStock =
                                 currentCartQuantity >= product.stockQuantity;
-
                               if (isOutOfStock) {
                                 return (
                                   <>
@@ -607,7 +615,6 @@ const ProductsPage = () => {
                                   </>
                                 );
                               }
-
                               if (cartItem) {
                                 return (
                                   <>
@@ -663,7 +670,6 @@ const ProductsPage = () => {
                                   </>
                                 );
                               }
-
                               return (
                                 <>
                                   <Button
@@ -699,7 +705,7 @@ const ProductsPage = () => {
                             })()}
                           </div>
                         </div>
-                      </>
+                      </div>
                     ) : (
                       /* Grid View Layout */
                       <>
@@ -993,8 +999,16 @@ const ProductsPage = () => {
       </section>
 
       {/* Newsletter Section */}
-      <section className="bg-green-800 text-white py-16">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <section
+        className={`bg-green-800 text-white ${isMobile ? "py-10" : "py-16"}`}
+      >
+        <div
+          className={`${
+            isMobile
+              ? "max-w-full px-3"
+              : "max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8"
+          }`}
+        >
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

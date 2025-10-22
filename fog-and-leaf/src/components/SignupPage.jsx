@@ -127,7 +127,7 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Data submitted:", formData);
+    // console.log("Data submitted:", formData);
 
     if (!validateForm()) return;
 
@@ -143,7 +143,7 @@ const SignupPage = () => {
       });
 
       const { user } = response.data;
-      console.log(user);
+      // console.log(user);
 
       // Using cookie-based authentication, no need for localStorage
       login(user);

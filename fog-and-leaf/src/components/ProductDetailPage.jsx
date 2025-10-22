@@ -55,7 +55,7 @@ const ProductDetailPage = () => {
           setProduct(response.data);
         }
       } catch (err) {
-        console.error("Error fetching product:", err);
+        // console.error("Error fetching product:", err);
         setError(err.response?.data?.message || "Failed to load product");
       } finally {
         setLoading(false);
@@ -273,7 +273,7 @@ const ProductDetailPage = () => {
         try {
           await addToCart(product, 1);
         } catch (error) {
-          console.error("Error adding to cart:", error);
+          // console.error("Error adding to cart:", error);
         }
       } else {
         alert("Sorry, this item is out of stock.");
@@ -288,7 +288,7 @@ const ProductDetailPage = () => {
       try {
         await updateQuantity(product.id, newQuantity);
       } catch (error) {
-        console.error("Error updating quantity:", error);
+        // console.error("Error updating quantity:", error);
       }
     } else {
       alert(
@@ -309,7 +309,7 @@ const ProductDetailPage = () => {
       try {
         await updateQuantity(product.id, newQuantity);
       } catch (error) {
-        console.error("Error updating quantity:", error);
+        // console.error("Error updating quantity:", error);
       }
     } else if (newQuantity > availableStock) {
       alert(
@@ -320,7 +320,7 @@ const ProductDetailPage = () => {
       try {
         await updateQuantity(product.id, 0);
       } catch (error) {
-        console.error("Error removing from cart:", error);
+        // console.error("Error removing from cart:", error);
       }
     }
   };

@@ -15,17 +15,21 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
-import axiosInstance from "../utility/axiosInstance";
+import { useProducts } from "../hooks/useProducts";
+import ErrorBoundary from "./ErrorBoundary";
 import HeroSection from "./HeroSection";
+import {
+  getCloudinaryUrl,
+  getCloudinarySrcSet,
+} from "../utility/cloudinaryImage";
 
-const HomePage = () => {
+const HomePageContent = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const { addToCart } = useCart();
+  const { getFeaturedProducts, loading, error } = useProducts();
 
-  // Fetch featured products from database
+  // Get featured products using the new hook
   useEffect(() => {
     const fallbackFeaturedProducts = [
       {
@@ -68,42 +72,16 @@ const HomePage = () => {
         inStock: true,
       },
     ];
+    // Get featured products from the useProducts hook
+    const featured = getFeaturedProducts(3);
 
-    const fetchFeaturedProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get("/products?limit=6"); // Get 6 products for homepage
-        const products = response.data.data || [];
-
-        // Filter for featured/highest rated products or take first 6
-        const featured = products
-          .filter(
-            (product) => product.rating >= 4.5 || product.stockQuantity > 15
-          )
-          .slice(0, 6);
-
-        // If not enough highly rated products, fill with others
-        if (featured.length < 6) {
-          const remaining = products
-            .filter((product) => !featured.includes(product))
-            .slice(0, 6 - featured.length);
-          featured.push(...remaining);
-        }
-
-        setFeaturedProducts(featured.slice(0, 6));
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching featured products:", err);
-        setError("Failed to load featured products");
-        // Fallback to static products
-        setFeaturedProducts(fallbackFeaturedProducts);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFeaturedProducts();
-  }, []);
+    if (featured && featured.length > 0) {
+      setFeaturedProducts(featured);
+    } else if (!loading && error) {
+      // Fallback to static products if there's an error and we're not loading
+      setFeaturedProducts(fallbackFeaturedProducts.slice(0, 3));
+    }
+  }, [getFeaturedProducts, loading, error]);
 
   // Handle add to cart
   const handleAddToCart = (product) => {
@@ -121,9 +99,7 @@ const HomePage = () => {
     ) {
       return product.imageUrl[0];
     }
-    if (typeof product.imageUrl === "string") {
-      return product.imageUrl;
-    }
+
     if (product.image_url) {
       return product.image_url;
     }
@@ -224,26 +200,29 @@ const HomePage = () => {
             className="text-center mb-16"
           >
             <Badge className="mb-4 bg-green-100 text-green-800 px-4 py-2">
-              Featured Collection
+              Sample Collection
             </Badge>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Our Premium Tea Selection
+              Taste Our Premium Tea Selection
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover our most popular and highest-rated teas, handpicked for
-              the perfect cup
+              Get a taste of our finest teas with these 3 sample products from
+              our premium collection
             </p>
           </motion.div>
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, index) => (
+              {[...Array(3)].map((_, index) => (
                 <Card key={index} className="overflow-hidden animate-pulse">
                   <div className="aspect-square bg-gray-200"></div>
                   <CardContent className="p-6">
                     <div className="h-4 bg-gray-200 rounded mb-2"></div>
                     <div className="h-3 bg-gray-200 rounded mb-4 w-3/4"></div>
-                    <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                    <div className="flex justify-between items-center">
+                      <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                      <div className="h-8 w-20 bg-gray-200 rounded"></div>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -272,15 +251,28 @@ const HomePage = () => {
                 >
                   <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
                     <div className="relative aspect-square overflow-hidden">
-                      <img
-                        src={getProductImage(product)}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        onError={(e) => {
-                          e.target.src =
-                            "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758263752/tea11_i0qe9n.jpg";
-                        }}
-                      />
+                      <picture>
+                        <source
+                          type="image/webp"
+                          srcSet={getCloudinarySrcSet(
+                            getProductImage(product),
+                            400
+                          )}
+                        />
+                        <img
+                          src={getCloudinaryUrl(getProductImage(product), {
+                            width: 400,
+                            format: "jpg",
+                          })}
+                          alt={product.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758263752/tea11_i0qe9n.jpg";
+                          }}
+                        />
+                      </picture>
                       {product.originalPrice > product.price && (
                         <Badge className="absolute top-3 left-3 bg-green-600 text-white">
                           Save ₹{product.originalPrice - product.price}
@@ -423,5 +415,12 @@ const HomePage = () => {
     </div>
   );
 };
+
+// Wrap HomePage with ErrorBoundary for better error handling
+const HomePage = () => (
+  <ErrorBoundary fallbackMessage="Failed to load homepage. Please refresh the page.">
+    <HomePageContent />
+  </ErrorBoundary>
+);
 
 export default HomePage;

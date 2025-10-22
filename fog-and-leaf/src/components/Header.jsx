@@ -8,7 +8,7 @@ import { ShoppingCart, User, Menu, X, Leaf, Package } from "lucide-react";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, isInitialAuthCheck } = useAuth();
   const { getCartItemCount } = useCart();
 
   const cartItemCount = getCartItemCount();
@@ -98,7 +98,13 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
-            {isAuthenticated ? (
+            {isInitialAuthCheck ? (
+              // Show skeleton while checking auth
+              <>
+                <div className="h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-8 w-16 bg-gray-200 animate-pulse rounded"></div>
+              </>
+            ) : isAuthenticated ? (
               <>
                 <Link to="/order-history">
                   <Button variant="ghost" size="sm" className="text-sm">

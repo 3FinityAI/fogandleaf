@@ -20,25 +20,25 @@ const heroImages = [
     url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758267005/tea_garden_vph6an.jpg",
     alt: "Misty tea plantation in Darjeeling hills",
     theme: "green",
-    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+    lqip: "https://res.cloudinary.com/dldsjwcpu/image/upload/e_blur:2000,q_1,w_20/v1758267005/tea_garden_vph6an.jpg",
   },
   {
     url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758265791/closeupshot_xfchtc.jpg",
     alt: "Premium tea leaves macro photography",
     theme: "natural",
-    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+    lqip: "https://res.cloudinary.com/dldsjwcpu/image/upload/e_blur:2000,q_1,w_20/v1758265791/closeupshot_xfchtc.jpg",
   },
   {
     url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758266518/tea_pouring_dvvjx1.jpg",
     alt: "Traditional tea pouring ceremony",
     theme: "warm",
-    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+    lqip: "https://res.cloudinary.com/dldsjwcpu/image/upload/e_blur:2000,q_1,w_20/v1758266518/tea_pouring_dvvjx1.jpg",
   },
   {
     url: "https://res.cloudinary.com/dldsjwcpu/image/upload/v1758263752/tea11_i0qe9n.jpg",
     alt: "Golden hour tea cup in natural garden setting",
     theme: "golden",
-    lqip: "data:image/png;base64,iVBORw0...", // (Tiny blurred placeholder, optional)
+    lqip: "https://res.cloudinary.com/dldsjwcpu/image/upload/e_blur:2000,q_1,w_20/v1758263752/tea11_i0qe9n.jpg",
   },
 ];
 
@@ -89,16 +89,29 @@ const HeroSection = () => {
           {/* Blurred LQIP placeholder */}
           {!imageLoaded && (
             <img
-              src={currentImage.lqip || ""}
+              src={currentImage.lqip}
               alt=""
               className="h-full w-full object-cover blur-2xl scale-105 transition-opacity duration-300 opacity-60 absolute inset-0"
               aria-hidden="true"
               draggable={false}
+              loading="eager"
             />
           )}
-          {/* Main High-Quality Hero Image */}
+          {/* Main High-Quality Hero Image with srcSet for responsive loading */}
           <img
             src={currentImage.url}
+            srcSet={
+              `${currentImage.url.replace(
+                "/upload/",
+                "/upload/w_600/"
+              )} 600w, ` +
+              `${currentImage.url.replace(
+                "/upload/",
+                "/upload/w_1200/"
+              )} 1200w, ` +
+              `${currentImage.url.replace("/upload/", "/upload/w_2000/")} 2000w`
+            }
+            sizes="(max-width: 600px) 600px, (max-width: 1200px) 1200px, 2000px"
             alt={currentImage.alt}
             className={`h-full w-full object-cover transition-opacity duration-700 ${
               imageLoaded ? "opacity-100" : "opacity-0"
